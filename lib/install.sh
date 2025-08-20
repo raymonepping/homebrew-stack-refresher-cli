@@ -79,9 +79,6 @@ _sr_repo_root() {
 #############################################
 # Tmux Config (samoshkin/tmux-config)
 #############################################
-#############################################
-# Tmux Config (samoshkin/tmux-config)
-#############################################
 install_tmux_config() {
   if ! command -v tmux >/dev/null 2>&1; then
     warn "tmux not installed; skipping tmux-config setup"
@@ -91,7 +88,6 @@ install_tmux_config() {
   local TMUX_CONFIG_DIR="$HOME/.tmux-config"
   local TMUX_CONFIG_REPO="https://github.com/samoshkin/tmux-config.git"
 
-  # If already cloned, skip reclone
   if [ -d "$TMUX_CONFIG_DIR" ]; then
     ok "tmux-config already present at $TMUX_CONFIG_DIR"
   else
@@ -106,13 +102,11 @@ install_tmux_config() {
     }
   fi
 
-  # Backup existing tmux.conf once
   if [ -f "$HOME/.tmux.conf" ] && [ ! -f "$HOME/.tmux.conf.bak" ]; then
     cp "$HOME/.tmux.conf" "$HOME/.tmux.conf.bak"
     ok "Backed up ~/.tmux.conf to ~/.tmux.conf.bak"
   fi
 
-  # Run upstream installer (idempotent)
   if bash "$TMUX_CONFIG_DIR/install.sh" >/dev/null 2>&1; then
     ok "tmux-config installed"
   else
@@ -214,7 +208,7 @@ _sr_post_install_integration() {
       ;;
     tmux)
       install_tmux_config
-      ;;      
+      ;;
   esac
 }
 
@@ -286,7 +280,9 @@ sr_brew_install() {
 sr_tool_brew_tuple() {
   case "$1" in
     # casks
-    raycast|warp|visual-studio-code|vscode) echo "visual-studio-code cask" ;;
+    raycast)                echo "raycast cask" ;;
+    warp)                   echo "warp cask" ;;
+    visual-studio-code|vscode) echo "visual-studio-code cask" ;;
 
     # Domain 1 — Terminal & UX
     eza) echo "eza formula" ;;
@@ -414,7 +410,7 @@ sr_tool_brew_tuple() {
     at)                echo "at formula" ;;
     tmux-resurrect)    echo "tmux-resurrect formula" ;;
 
-    # Networking & API extras if you add them to JSON
+    # Networking & API extras
     curlie)            echo "curlie formula" ;;
     nmap)              echo "nmap formula" ;;
     dig)               echo "bind formula" ;;

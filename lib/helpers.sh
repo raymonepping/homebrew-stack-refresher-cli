@@ -18,14 +18,11 @@ sr_fn_exists() { command -v "$1" >/dev/null 2>&1; }
 # Nerd Font install + iTerm2 font configuration
 # ---------------------------------------------
 
-# Idempotently install Meslo Nerd Font via Homebrew (macOS).
-# On Linux or if Homebrew missing, we simply no-op with a hint.
 sr_install_nerd_font() {
   local os font_name
   os="$(uname -s 2>/dev/null || echo Unknown)"
   font_name="font-meslo-lg-nerd-font"
 
-  # If the font is already available in user's fonts, skip (best-effort).
   if fc-list 2>/dev/null | grep -qi 'MesloLGS Nerd Font'; then
     printf "✅ Nerd Font (MesloLGS) already available on system\n"
     return 0
@@ -47,7 +44,6 @@ sr_install_nerd_font() {
   fi
 }
 
-# Idempotently set iTerm2 to use Meslo Nerd Font (macOS only).
 sr_set_iterm2_font() {
   local os
   os="$(uname -s 2>/dev/null || echo Unknown)"
@@ -141,6 +137,29 @@ sr_brew_installed_version() {
     || true
 }
 
+# NEW: cask version
+sr_brew_installed_cask_version() {
+  local name="$1"
+  command -v brew >/dev/null 2>&1 || return 0
+  command -v jq   >/dev/null 2>&1 || return 0
+
+  brew info --cask --json=v2 "$name" 2>/dev/null \
+    | jq -r '
+      .casks[0] as $c
+      | (
+          # installed can be array, string, null, or missing
+          ( $c.installed
+            | if type=="array" and length>0 then .[0].version
+              elif type=="string" then .
+              else empty
+              end
+          )
+          // $c.version
+          // empty
+        )
+    ' 2>/dev/null || true
+}
+
 sr_brew_latest_stable_version() {
   local name="$1"
   command -v brew >/dev/null 2>&1 || return 0
@@ -150,22 +169,19 @@ sr_brew_latest_stable_version() {
     || true
 }
 
-# Tool-aware version detection (tries best flag per tool, falls back to generic)
+# Tool-aware version detection
 sr_cmd_version() {
   local cmd="$1"
   command -v "$cmd" >/dev/null 2>&1 || return 0
 
   case "$cmd" in
-kubectl)
-      # Prefer JSON (more stable across locales), then fall back to --client --short
-      # Try: kubectl version -o json → .clientVersion.gitVersion (e.g. "v1.33.4")
+    kubectl)
       if command -v jq >/dev/null 2>&1; then
         kubectl version -o json 2>/dev/null \
           | jq -r '.clientVersion.gitVersion // empty' \
           | sed -e 's/^v//' \
           | head -n1 && return 0
       fi
-      # Fallback: kubectl version --client --short → "Client Version: v1.xx.y"
       kubectl version --client --short 2>/dev/null \
         | grep -Eo 'v[0-9]+(\.[0-9]+){1,2}' \
         | sed -e 's/^v//' \
@@ -173,17 +189,13 @@ kubectl)
       return 0
       ;;
     helm)
-      # helm version --short → e.g. "v3.18.5+gXXXX"
       helm version --short 2>/dev/null \
         | grep -Eo 'v?[0-9]+(\.[0-9]+){1,2}' \
         | sed -e 's/^v//' \
         | head -n1 || true
       return 0
       ;;
-
     parallel)
-      # GNU parallel --version → "GNU parallel 20250122"
-      # Capture either yyyyMMdd or semver
       local line
       line="$(parallel --version 2>/dev/null | head -n1)"
       printf "%s\n" "$line" \
@@ -192,13 +204,11 @@ kubectl)
       return 0
       ;;
     tmux)
-      # tmux -V → "tmux 3.5a"
       tmux -V 2>/dev/null \
         | grep -Eo '[0-9]+(\.[0-9]+){1,2}[a-z]?' \
         | head -n1 || true
       return 0
       ;;
-
     jq)
       jq --version 2>/dev/null \
         | grep -Eo '[0-9]+(\.[0-9]+){1,2}' \
@@ -207,7 +217,6 @@ kubectl)
       ;;
   esac
 
-  # Generic path
   "$cmd" --version 2>&1 \
     | grep -Eo '[0-9]+(\.[0-9]+){1,3}' \
     | head -n1 || true
@@ -234,8 +243,12 @@ sr_detect_source() {
   if [ "$install_kind" = "webi" ]; then
     printf "webi\n"; return
   fi
-  if command -v brew >/dev/null 2>&1 && brew list --formula >/dev/null 2>&1; then
-    if brew list --formula | grep -qx "${brew_name:-$tool}"; then
+  if command -v brew >/dev/null 2>&1; then
+    # consider casks too
+    if [ "$install_kind" = "cask" ] || brew list --cask >/dev/null 2>&1 && brew list --cask | grep -qx "${brew_name:-$tool}"; then
+      printf "brew\n"; return
+    fi
+    if brew list --formula >/dev/null 2>&1 && brew list --formula | grep -qx "${brew_name:-$tool}"; then
       printf "brew\n"; return
     fi
   fi
@@ -243,31 +256,30 @@ sr_detect_source() {
 }
 
 # Binary name candidates for tools whose CLI != formula name (or meta tools)
-# Return space-separated list.
 sr_binary_candidates() {
   case "$1" in
-    ripgrep) echo "rg ripgrep" ;;             # prefer rg binary
+    ripgrep) echo "rg ripgrep" ;;
     rg)      echo "rg ripgrep" ;;
     git-delta|delta) echo "delta" ;;
     docker-compose|compose) echo "docker-compose 'docker compose'" ;;
     gh-key-upload|gh) echo "gh" ;;
-    openssh) echo "ssh scp sftp ssh-add" ;;   # any implies openssh present
-    "1password-cli"|op) echo "op" ;;
-    powerlevel10k) echo "" ;;                 # meta theme; handled specially
+    openssh) echo "ssh scp sftp ssh-add" ;;
+    powerlevel10k) echo "" ;;
     kubectx) echo "kubectx" ;;
     kubens)  echo "kubens" ;;
-    bottom)  echo "btm bottom" ;;             # bottom’s binary is usually `btm`
+    bottom)  echo "btm bottom" ;;
     btm)     echo "btm bottom" ;;
+    # GUI casks typically have no CLI on PATH by default
+    raycast) echo "" ;;
+    visual-studio-code|vscode) echo "code" ;;
     *) echo "$1" ;;
   esac
 }
 
-# Does any of the provided candidate binaries exist?
 sr_any_cmd_exists() {
   local cand
   for cand in "$@"; do
     [ -z "$cand" ] && continue
-    # support a two-word candidate like "docker compose"
     if [[ "$cand" == *" "* ]]; then
       local first="${cand%% *}" second="${cand#* }"
       command -v "$first" >/dev/null 2>&1 && "$first" "$second" --help >/dev/null 2>&1 && return 0
@@ -278,7 +290,7 @@ sr_any_cmd_exists() {
   return 1
 }
 
-# After (or if) a tool is present, record version + source into state.
+# Record version/state (now handles casks properly)
 # Args: tool brew_name install_kind [domain]
 sr_record_tool_version() {
   local tool="$1" brew_name="$2" install_kind="$3" domain="${4:-}"
@@ -287,7 +299,18 @@ sr_record_tool_version() {
   local source; source="$(sr_detect_source "$tool" "$brew_name" "$install_kind")"
   local version="" installed=false
 
-  # Special handling for meta tools
+  # Handle casks (GUI apps) first
+  if [ "$install_kind" = "cask" ]; then
+    if command -v brew >/dev/null 2>&1 && brew list --cask >/dev/null 2>&1 && brew list --cask | grep -qx "${brew_name:-$tool}"; then
+      installed=true
+      version="$(sr_brew_installed_cask_version "${brew_name:-$tool}")"
+    fi
+    sr_version_state_write "$tool" "$installed" "${version:-}" "${source:-path}"
+    [ -n "$domain" ] && sr_state_add_domain "$tool" "$domain"
+    return 0
+  fi
+
+  # Special-case meta/tools
   if [ "$tool" = "powerlevel10k" ]; then
     local omz_custom="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
     local p10k_dir="$omz_custom/themes/powerlevel10k"
@@ -299,8 +322,8 @@ sr_record_tool_version() {
     [ -n "$domain" ] && sr_state_add_domain "$tool" "$domain"
     return 0
   fi
+
   if [ "$tool" = "openssh" ]; then
-    # treat openssh installed if brew has formula OR ssh exists
     if [ "$source" = "brew" ] || sr_any_cmd_exists ssh; then
       installed=true
       version="$(sr_brew_installed_version "$brew_name")"
@@ -311,17 +334,15 @@ sr_record_tool_version() {
     return 0
   fi
 
-  # Try candidate binaries
+  # Formulae & generic
   local cands; cands=($(sr_binary_candidates "$tool"))
   [ "${#cands[@]}" -eq 0 ] && cands=("$tool")
 
   if sr_any_cmd_exists "${cands[@]}"; then
     installed=true
-    # Prefer brew version if brew says it's there
     if [ "$source" = "brew" ] && [ -n "$brew_name" ]; then
       version="$(sr_brew_installed_version "$brew_name")"
     fi
-    # If no brew version, try first viable candidate with tool-aware scraper
     if [ -z "$version" ]; then
       for cand in "${cands[@]}"; do
         [[ "$cand" == *" "* ]] && continue
