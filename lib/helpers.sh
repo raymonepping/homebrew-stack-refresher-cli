@@ -26,7 +26,6 @@ sr_install_nerd_font() {
   font_name="font-meslo-lg-nerd-font"
 
   # If the font is already available in user's fonts, skip (best-effort).
-  # This won't cover all cases, but avoids re-install spam.
   if fc-list 2>/dev/null | grep -qi 'MesloLGS Nerd Font'; then
     printf "✅ Nerd Font (MesloLGS) already available on system\n"
     return 0
@@ -44,13 +43,11 @@ sr_install_nerd_font() {
       printf "⚠️  Homebrew not found; skipping Nerd Font install\n"
     fi
   else
-    # Non-macOS: leave a helpful hint; do not fail the run.
     printf "ℹ️  On Linux, install a Nerd Font (e.g., MesloLGS) via your package manager.\n"
   fi
 }
 
 # Idempotently set iTerm2 to use Meslo Nerd Font (macOS only).
-# Uses macOS 'defaults' to set the font for new profiles (not retroactive to all existing custom profiles).
 sr_set_iterm2_font() {
   local os
   os="$(uname -s 2>/dev/null || echo Unknown)"
@@ -58,23 +55,17 @@ sr_set_iterm2_font() {
     printf "ℹ️  iTerm2 font wiring skipped (non-macOS)\n"
     return 0
   fi
-
   if ! command -v defaults >/dev/null 2>&1; then
     printf "⚠️  macOS 'defaults' tool not available; cannot configure iTerm2 font\n"
     return 0
   fi
-
-  # If iTerm2 prefs file isn’t present yet (first run), skip quietly.
   local plist="$HOME/Library/Preferences/com.googlecode.iterm2.plist"
   if [ ! -f "$plist" ]; then
     printf "ℹ️  iTerm2 preferences not found; launch iTerm2 once, then re-run Terminal & UX domain\n"
     return 0
   fi
-
-  # Set fonts for new profiles (Normal & Non-ASCII). Size 14 is a sensible default.
   defaults write com.googlecode.iterm2 "Normal Font" -string "MesloLGS Nerd Font 14"
   defaults write com.googlecode.iterm2 "Non Ascii Font" -string "MesloLGS Nerd Font 14"
-
   printf "✅ iTerm2 configured to use MesloLGS Nerd Font (size 14)\n"
   printf "💡 Restart iTerm2 to apply font changes to existing sessions.\n"
 }
@@ -82,18 +73,15 @@ sr_set_iterm2_font() {
 # -----------------------------
 # Version state (JSON) helpers
 # -----------------------------
-# State file lives in ./state/.base.version.state.json by default.
 SR_STATE_DIR="${SR_STATE_DIR:-$PWD/state}"
 SR_VERSION_STATE="${SR_VERSION_STATE:-$SR_STATE_DIR/.base.version.state.json}"
 
-# Ensure state file exists and is valid JSON.
 sr_version_state_init() {
   mkdir -p "$SR_STATE_DIR"
   if [ ! -f "$SR_VERSION_STATE" ]; then
     printf "{}\n" > "$SR_VERSION_STATE"
     return 0
   fi
-  # best-effort validation
   if command -v jq >/dev/null 2>&1; then
     if ! jq empty "$SR_VERSION_STATE" >/dev/null 2>&1; then
       cp "$SR_VERSION_STATE" "$SR_VERSION_STATE.bak.$(date +%Y%m%d-%H%M%S)"
@@ -102,15 +90,12 @@ sr_version_state_init() {
   fi
 }
 
-# Read a field from state: .[tool].field
 sr_version_state_read() {
   local tool="$1" field="$2"
   command -v jq >/dev/null 2>&1 || return 0
   jq -r --arg t "$tool" --arg f "$field" '.[$t][$f] // empty' "$SR_VERSION_STATE"
 }
 
-# Write/update a tool entry
-# Args: tool installed(true/false) version source
 sr_version_state_write() {
   local tool="$1" installed="$2" version="$3" source="$4"
   command -v jq >/dev/null 2>&1 || return 0
@@ -125,18 +110,17 @@ sr_version_state_write() {
      "$SR_VERSION_STATE" > "$tmp" && mv "$tmp" "$SR_VERSION_STATE"
 }
 
-# Best-effort: get installed version of a brew formula (by name)
+# ---- Brew + generic version discovery (non-fatal) ----
+
 sr_brew_installed_version() {
   local name="$1"
   command -v brew >/dev/null 2>&1 || return 0
   command -v jq   >/dev/null 2>&1 || return 0
-  # Do not exit on brew/jq failure under pipefail
   brew info --json=v2 "$name" 2>/dev/null \
     | jq -r '.formulae[0].installed[0].version // empty' \
     || true
 }
 
-# Best-effort: get latest stable version known to brew
 sr_brew_latest_stable_version() {
   local name="$1"
   command -v brew >/dev/null 2>&1 || return 0
@@ -146,11 +130,9 @@ sr_brew_latest_stable_version() {
     || true
 }
 
-# Fallback: try "<cmd> --version" and scrape a semver looking string.
 sr_cmd_version() {
   local cmd="$1"
   command -v "$cmd" >/dev/null 2>&1 || return 0
-  # Don’t let a “no match” kill the script under pipefail
   "$cmd" --version 2>&1 \
     | grep -Eo '[0-9]+(\.[0-9]+){1,3}' \
     | head -n1 \
@@ -172,20 +154,52 @@ sr_semver_cmp() {
   fi
 }
 
-# Resolve the likely source of a tool for state recording
-# brew|webi|path
+# Resolve the likely source of a tool for state recording (brew|webi|path)
 sr_detect_source() {
   local tool="$1" brew_name="$2" install_kind="$3"
   if [ "$install_kind" = "webi" ]; then
     printf "webi\n"; return
   fi
   if command -v brew >/dev/null 2>&1 && brew list --formula >/dev/null 2>&1; then
-    # if brew knows about this formula or it's installed via brew
     if brew list --formula | grep -qx "${brew_name:-$tool}"; then
       printf "brew\n"; return
     fi
   fi
   printf "path\n"
+}
+
+# Binary name candidates for tools whose CLI != formula name (or meta tools)
+# Return space-separated list.
+sr_binary_candidates() {
+  case "$1" in
+    ripgrep) echo "ripgrep rg" ;;
+    rg)      echo "rg ripgrep" ;;
+    git-delta|delta) echo "delta" ;;
+    docker-compose|compose) echo "docker-compose 'docker compose'" ;;
+    gh-key-upload|gh) echo "gh" ;;
+    openssh) echo "ssh scp sftp ssh-add" ;;             # any implies openssh present
+    "1password-cli"|op) echo "op" ;;
+    powerlevel10k) echo "" ;;                           # meta theme; handled specially
+    kubectx) echo "kubectx" ;;
+    kubens) echo "kubens" ;;
+    *) echo "$1" ;;
+  esac
+}
+
+# Does any of the provided candidate binaries exist?
+sr_any_cmd_exists() {
+  local cand
+  for cand in "$@"; do
+    [ -z "$cand" ] && continue
+    # support a two-word candidate like "docker compose"
+    if [[ "$cand" == *" "* ]]; then
+      local first="${cand%% *}" second="${cand#* }"
+      command -v "$first" >/dev/null 2>&1 && "$first" "$second" --help >/dev/null 2>&1 && return 0
+    else
+      command -v "$cand" >/dev/null 2>&1 && return 0
+    fi
+  done
+  return 1
 }
 
 # After (or if) a tool is present, record version + source into state.
@@ -195,24 +209,62 @@ sr_record_tool_version() {
   sr_version_state_init
 
   local source; source="$(sr_detect_source "$tool" "$brew_name" "$install_kind")"
-  local version=""
+  local version="" installed=false
 
-  if [ "$source" = "brew" ] && [ -n "$brew_name" ]; then
-    version="$(sr_brew_installed_version "$brew_name")"
+  # Special handling for meta tools: trust brew or filesystem
+  if [ "$tool" = "powerlevel10k" ]; then
+    local omz_custom="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+    local p10k_dir="$omz_custom/themes/powerlevel10k"
+    if [ "$source" = "brew" ] || [ -d "$p10k_dir" ]; then
+      installed=true
+      version="$(sr_brew_installed_version "$brew_name")"
+    fi
+    sr_version_state_write "$tool" "$installed" "${version:-}" "${source:-path}"
+    return 0
   fi
-  if [ -z "$version" ]; then
-    version="$(sr_cmd_version "$tool")"
+  if [ "$tool" = "openssh" ]; then
+    # treat openssh installed if brew has formula OR ssh exists
+    if [ "$source" = "brew" ] || sr_any_cmd_exists ssh; then
+      installed=true
+      version="$(sr_brew_installed_version "$brew_name")"
+      [ -z "$version" ] && version="$(sr_cmd_version ssh)"
+    fi
+    sr_version_state_write "$tool" "$installed" "${version:-}" "${source:-path}"
+    return 0
   fi
 
-  if command -v "$tool" >/dev/null 2>&1; then
-    sr_version_state_write "$tool" true "${version:-unknown}" "$source"
+  # Try candidate binaries
+  local cands; cands=($(sr_binary_candidates "$tool"))
+  if [ "${#cands[@]}" -eq 0 ]; then
+    # fall back to tool itself
+    cands=("$tool")
+  fi
+
+  if sr_any_cmd_exists "${cands[@]}"; then
+    installed=true
+    # Prefer brew version if brew says it's there
+    if [ "$source" = "brew" ] && [ -n "$brew_name" ]; then
+      version="$(sr_brew_installed_version "$brew_name")"
+    fi
+    # If no brew version, try first candidate
+    if [ -z "$version" ]; then
+      # for two-word candidates like "docker compose", just skip version (not critical)
+      for cand in "${cands[@]}"; do
+        if [[ "$cand" == *" "* ]]; then
+          continue
+        fi
+        version="$(sr_cmd_version "$cand")"
+        [ -n "$version" ] && break
+      done
+    fi
   else
-    sr_version_state_write "$tool" false "" "$source"
+    installed=false
   fi
+
+  sr_version_state_write "$tool" "$installed" "${version:-}" "${source:-path}"
 }
 
 # If SR_UPGRADE=1 and brew shows a newer stable, upgrade.
-# Prints a warning when outdated if not upgrading.
 sr_brew_maybe_upgrade() {
   local brew_name="$1"
   command -v brew >/dev/null 2>&1 || return 0
@@ -227,7 +279,6 @@ sr_brew_maybe_upgrade() {
   sr_semver_cmp "$installed" "$latest"
   case $? in
     2)
-      # installed < latest
       if [ "${SR_UPGRADE:-0}" = "1" ]; then
         printf "⬆️  Upgrading %s (current: %s → latest: %s)\n" "$brew_name" "$installed" "$latest"
         brew upgrade "$brew_name" >/dev/null 2>&1 || true
