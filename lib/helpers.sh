@@ -96,6 +96,8 @@ sr_version_state_read() {
   jq -r --arg t "$tool" --arg f "$field" '.[$t][$f] // empty' "$SR_VERSION_STATE"
 }
 
+# Write/update a tool entry (without domains)
+# Args: tool installed(true/false) version source
 sr_version_state_write() {
   local tool="$1" installed="$2" version="$3" source="$4"
   command -v jq >/dev/null 2>&1 || return 0
@@ -106,8 +108,26 @@ sr_version_state_write() {
      --arg v "$version" \
      --arg s "$source" \
      --arg ts "$ts" \
-     '.[$t] = {installed: $i, version: $v, source: $s, last_checked: $ts}' \
+     '
+     .[$t] = (.[$t] // {})
+     | .[$t].installed = $i
+     | .[$t].version = $v
+     | .[$t].source = $s
+     | .[$t].last_checked = $ts
+     ' \
      "$SR_VERSION_STATE" > "$tmp" && mv "$tmp" "$SR_VERSION_STATE"
+}
+
+# Add a domain tag into tool.domains (unique)
+sr_state_add_domain() {
+  local tool="$1" domain="$2"
+  command -v jq >/dev/null 2>&1 || return 0
+  [ -z "$domain" ] && return 0
+  local tmp; tmp="$(mktemp)"
+  jq --arg t "$tool" --arg d "$domain" '
+    .[$t] = (.[$t] // {})
+    | .[$t].domains = ((.[$t].domains // []) + [$d] | unique)
+  ' "$SR_VERSION_STATE" > "$tmp" && mv "$tmp" "$SR_VERSION_STATE"
 }
 
 # ---- Brew + generic version discovery (non-fatal) ----
@@ -169,7 +189,6 @@ sr_detect_source() {
 }
 
 # Binary name candidates for tools whose CLI != formula name (or meta tools)
-# Return space-separated list.
 sr_binary_candidates() {
   case "$1" in
     ripgrep) echo "ripgrep rg" ;;
@@ -177,11 +196,11 @@ sr_binary_candidates() {
     git-delta|delta) echo "delta" ;;
     docker-compose|compose) echo "docker-compose 'docker compose'" ;;
     gh-key-upload|gh) echo "gh" ;;
-    openssh) echo "ssh scp sftp ssh-add" ;;             # any implies openssh present
+    openssh) echo "ssh scp sftp ssh-add" ;;
     "1password-cli"|op) echo "op" ;;
-    powerlevel10k) echo "" ;;                           # meta theme; handled specially
+    powerlevel10k) echo "" ;;     # meta theme
     kubectx) echo "kubectx" ;;
-    kubens) echo "kubens" ;;
+    kubens)  echo "kubens" ;;
     *) echo "$1" ;;
   esac
 }
@@ -191,7 +210,6 @@ sr_any_cmd_exists() {
   local cand
   for cand in "$@"; do
     [ -z "$cand" ] && continue
-    # support a two-word candidate like "docker compose"
     if [[ "$cand" == *" "* ]]; then
       local first="${cand%% *}" second="${cand#* }"
       command -v "$first" >/dev/null 2>&1 && "$first" "$second" --help >/dev/null 2>&1 && return 0
@@ -203,15 +221,15 @@ sr_any_cmd_exists() {
 }
 
 # After (or if) a tool is present, record version + source into state.
-# Args: tool brew_name install_kind
+# Args: tool brew_name install_kind [domain]
 sr_record_tool_version() {
-  local tool="$1" brew_name="$2" install_kind="$3"
+  local tool="$1" brew_name="$2" install_kind="$3" domain="${4:-}"
   sr_version_state_init
 
   local source; source="$(sr_detect_source "$tool" "$brew_name" "$install_kind")"
   local version="" installed=false
 
-  # Special handling for meta tools: trust brew or filesystem
+  # Special handling for meta tools
   if [ "$tool" = "powerlevel10k" ]; then
     local omz_custom="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
     local p10k_dir="$omz_custom/themes/powerlevel10k"
@@ -220,39 +238,32 @@ sr_record_tool_version() {
       version="$(sr_brew_installed_version "$brew_name")"
     fi
     sr_version_state_write "$tool" "$installed" "${version:-}" "${source:-path}"
+    [ -n "$domain" ] && sr_state_add_domain "$tool" "$domain"
     return 0
   fi
   if [ "$tool" = "openssh" ]; then
-    # treat openssh installed if brew has formula OR ssh exists
     if [ "$source" = "brew" ] || sr_any_cmd_exists ssh; then
       installed=true
       version="$(sr_brew_installed_version "$brew_name")"
       [ -z "$version" ] && version="$(sr_cmd_version ssh)"
     fi
     sr_version_state_write "$tool" "$installed" "${version:-}" "${source:-path}"
+    [ -n "$domain" ] && sr_state_add_domain "$tool" "$domain"
     return 0
   fi
 
   # Try candidate binaries
   local cands; cands=($(sr_binary_candidates "$tool"))
-  if [ "${#cands[@]}" -eq 0 ]; then
-    # fall back to tool itself
-    cands=("$tool")
-  fi
+  [ "${#cands[@]}" -eq 0 ] && cands=("$tool")
 
   if sr_any_cmd_exists "${cands[@]}"; then
     installed=true
-    # Prefer brew version if brew says it's there
     if [ "$source" = "brew" ] && [ -n "$brew_name" ]; then
       version="$(sr_brew_installed_version "$brew_name")"
     fi
-    # If no brew version, try first candidate
     if [ -z "$version" ]; then
-      # for two-word candidates like "docker compose", just skip version (not critical)
       for cand in "${cands[@]}"; do
-        if [[ "$cand" == *" "* ]]; then
-          continue
-        fi
+        [[ "$cand" == *" "* ]] && continue
         version="$(sr_cmd_version "$cand")"
         [ -n "$version" ] && break
       done
@@ -262,6 +273,7 @@ sr_record_tool_version() {
   fi
 
   sr_version_state_write "$tool" "$installed" "${version:-}" "${source:-path}"
+  [ -n "$domain" ] && sr_state_add_domain "$tool" "$domain"
 }
 
 # If SR_UPGRADE=1 and brew shows a newer stable, upgrade.

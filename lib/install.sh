@@ -21,7 +21,6 @@ _sr_ensure_tap() {
 }
 
 # Return installed tap for a formula, or empty if not installed
-# Uses brew info --json to avoid brittle parsing.
 _sr_installed_tap() {
   local name="$1"
   local json
@@ -36,7 +35,6 @@ _sr_installed_tap() {
 }
 
 # ----- Shell integration helpers --------------------------------------------
-# Detect user shell rc file, prefer zsh if present.
 _sr_rc_file() {
   if [ -n "${ZDOTDIR:-}" ] && [ -f "$ZDOTDIR/.zshrc" ]; then
     printf "%s\n" "$ZDOTDIR/.zshrc"; return
@@ -50,13 +48,11 @@ _sr_rc_file() {
   printf "%s\n" "$HOME/.zshrc"
 }
 
-# Append a line once to rc file
 _sr_append_once() {
   local rc="$1" line="$2"
   grep -Fqx "$line" "$rc" 2>/dev/null || printf "%s\n" "$line" >> "$rc"
 }
 
-# Portable in-place sed for macOS and Linux
 _sr_sed_inplace() {
   local expr="$1" file="$2"
   if [ "$OS" = "Darwin" ]; then
@@ -66,7 +62,6 @@ _sr_sed_inplace() {
   fi
 }
 
-# Install Oh My Zsh non-interactively if missing
 _sr_install_ohmyzsh() {
   if [ ! -d "$HOME/.oh-my-zsh" ]; then
     RUNZSH=no CHSH=no KEEP_ZSHRC=yes \
@@ -75,14 +70,12 @@ _sr_install_ohmyzsh() {
   fi
 }
 
-# Resolve repo root from this file location (lib/ -> repo root)
 _sr_repo_root() {
   local here
   here="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
   cd "$here/.." && pwd
 }
 
-# Setup Powerlevel10k + OMZ theme, idempotent
 _sr_setup_p10k() {
   local rc root tpl1 tpl2
   rc="$(_sr_rc_file)"
@@ -95,7 +88,6 @@ _sr_setup_p10k() {
     git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$p10k_dir" >/dev/null 2>&1 || true
   fi
 
-  # Ensure ZSH_THEME line is present and set to p10k
   if [ -f "$rc" ]; then
     if grep -q '^ZSH_THEME=' "$rc"; then
       _sr_sed_inplace 's/^ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$rc"
@@ -106,7 +98,6 @@ _sr_setup_p10k() {
     printf '%s\n' 'ZSH_THEME="powerlevel10k/powerlevel10k"' >> "$rc"
   fi
 
-  # If a repo-scoped p10k config exists, apply it
   root="$(_sr_repo_root)"
   tpl1="$root/configuration/.p10k.zsh"
   tpl2="$root/templates/p10k_mysetup.zsh"
@@ -118,12 +109,10 @@ _sr_setup_p10k() {
     ok "Applied repo p10k config from templates/p10k_mysetup.zsh"
   fi
 
-  # Source optional ~/.p10k.zsh if present
   _sr_append_once "$rc" '[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh'
   ok "powerlevel10k wired into $(basename "$rc")"
 }
 
-# Post-install shell wiring for tools that need it
 _sr_post_install_integration() {
   local tool rc
   tool="$1"
@@ -132,7 +121,6 @@ _sr_post_install_integration() {
   case "$tool" in
     thefuck)
       _sr_append_once "$rc" 'eval $(thefuck --alias)'
-      # make it work immediately
       eval "$(thefuck --alias)" || true
       ok "thefuck alias added to $(basename "$rc")"
       printf "💡 Tip: run a failing command, then type 'fuck' to fix and re-run.\n"
@@ -184,8 +172,6 @@ _sr_post_install_integration() {
 }
 
 # --- Webinstall wrapper ------------------------------------------------------
-# Usage: sr_webi_install <tool>
-# Installs tools that do not have a viable brew formula, then sources envman PATH.
 sr_webi_install() {
   local tool="$1"
 
@@ -215,8 +201,6 @@ sr_webi_install() {
 }
 
 # --- Brew install wrapper ----------------------------------------------------
-# Usage: sr_brew_install <name> <type>
-# <name> may be fully qualified (eg hashicorp/tap/nomad)
 sr_brew_install() {
   local fqname="$1" type="$2"
 
@@ -247,12 +231,11 @@ sr_brew_install() {
   if [ "$type" = "cask" ]; then
     brew install --cask "$fqname" >/dev/null
   else
-    brew install "$fqname" >/devnull
+    brew install "$fqname" >/dev/null
   fi
 }
 
 # --- Tool mapper -------------------------------------------------------------
-# Returns "<name> <install_type>", where install_type is one of: formula, cask, webi
 sr_tool_brew_tuple() {
   case "$1" in
     # casks
@@ -317,16 +300,14 @@ sr_tool_brew_tuple() {
     colima)            echo "colima formula" ;;
     docker)            echo "docker formula" ;;
     podman)            echo "podman formula" ;;
-    compose|docker-compose)
-                       echo "docker-compose formula" ;;
+    compose|docker-compose) echo "docker-compose formula" ;;
     nomad)             echo "hashicorp/tap/nomad formula" ;;
     buildah)           echo "buildah formula" ;;
     skopeo)            echo "skopeo formula" ;;
     trivy)             echo "trivy formula" ;;
     ctop)              echo "ctop formula" ;;
     dive)              echo "dive formula" ;;
-    docker-slim|dockerslim)
-                       echo "docker-slim formula" ;;
+    docker-slim|dockerslim) echo "docker-slim formula" ;;
     syft)              echo "syft formula" ;;
     grype)             echo "grype formula" ;;
 
@@ -344,8 +325,7 @@ sr_tool_brew_tuple() {
     vault)             echo "hashicorp/tap/vault formula" ;;
     sops)              echo "sops formula" ;;
     mkcert)            echo "mkcert formula" ;;
-    "1password-cli"|op)
-                       echo "1password-cli formula" ;;
+    "1password-cli"|op) echo "1password-cli formula" ;;
     boundary)          echo "hashicorp/tap/boundary formula" ;;
 
     # Domain 8 — Observability & Logs
@@ -391,8 +371,7 @@ sr_tool_brew_tuple() {
     curlie)            echo "curlie formula" ;;
     nmap)              echo "nmap formula" ;;
     dig)               echo "bind formula" ;;
-    the_silver_searcher|ag)
-                       echo "the_silver_searcher formula" ;;
+    the_silver_searcher|ag) echo "the_silver_searcher formula" ;;
     tree)              echo "tree formula" ;;
 
     # default
@@ -409,7 +388,6 @@ _sr_brew_has_pkg() {
 sr_install_tool() {
   local domain="$1" tool="$2" level="$3"
   read -r brew_name brew_type < <(sr_tool_brew_tuple "$tool")
-  # Normalize brew_name for state purposes when empty
   if [ -z "${brew_name:-}" ]; then brew_name="$tool"; fi
 
   # Friendly messages for kubectx/kubens already present
@@ -417,8 +395,7 @@ sr_install_tool() {
     local tap; tap="$(_sr_installed_tap kubectx)"
     sr_log_json "$domain" "$tool" "$level" "installed"
     ok "kubectx (already installed${tap:+ via $tap})"
-    # record version/state
-    sr_record_tool_version "$tool" "$brew_name" "$brew_type" || true
+    sr_record_tool_version "$tool" "$brew_name" "$brew_type" "$domain" || true
     return 0
   fi
   if [ "$tool" = "kubens" ] && have kubens; then
@@ -426,12 +403,12 @@ sr_install_tool() {
       local tap; tap="$(_sr_installed_tap kubectx)"
       sr_log_json "$domain" "$tool" "$level" "installed"
       ok "kubens (already installed via ${tap:-homebrew/core}, provided by kubectx)"
-      sr_record_tool_version "$tool" "$brew_name" "$brew_type" || true
+      sr_record_tool_version "$tool" "$brew_name" "$brew_type" "$domain" || true
       return 0
     fi
     sr_log_json "$domain" "$tool" "$level" "installed"
     ok "kubens (already installed)"
-    sr_record_tool_version "$tool" "$brew_name" "$brew_type" || true
+    sr_record_tool_version "$tool" "$brew_name" "$brew_type" "$domain" || true
     return 0
   fi
 
@@ -444,8 +421,7 @@ sr_install_tool() {
         _sr_post_install_integration "$tool"
         ;;
     esac
-    # record version/state
-    sr_record_tool_version "$tool" "$brew_name" "$brew_type" || true
+    sr_record_tool_version "$tool" "$brew_name" "$brew_type" "$domain" || true
     return 0
   fi
 
@@ -462,7 +438,7 @@ sr_install_tool() {
           sr_log_json "$domain" "$tool" "$level" "failed"
           return 1
         fi
-        # Optionally upgrade if outdated (only meaningful for formulas)
+        # Optionally upgrade if outdated (formulas only)
         if [ "$brew_type" != "cask" ]; then
           sr_brew_maybe_upgrade "$brew_name" || true
         fi
@@ -483,7 +459,7 @@ sr_install_tool() {
   esac
 
   # Record version/state after install/upgrade
-  sr_record_tool_version "$tool" "$brew_name" "$brew_type" || true
+  sr_record_tool_version "$tool" "$brew_name" "$brew_type" "$domain" || true
 }
 
 sr_install_group() {
@@ -492,7 +468,6 @@ sr_install_group() {
   for t in "${tools[@]}"; do sr_install_tool "$domain" "$t" "$level"; done
 }
 
-# Wire more domains into this as they’re implemented
 sr_install_all_must() {
   ok "Installing ALL MUST tools from implemented domains…"
   for fn in \
