@@ -514,11 +514,19 @@ sr_install_group() {
 sr_install_all_must() {
   ok "Installing ALL MUST tools from implemented domains…"
   for fn in \
-    sr_domain_01_terminal sr_domain_02_ssh sr_domain_03_git sr_domain_04_code \
-    sr_domain_05_containers sr_domain_06_k8s sr_domain_07_secrets \
-    sr_domain_08_observability sr_domain_09_iac sr_domain_10_automation
+    sr_domain_01_terminal \
+    sr_domain_02_ssh \
+    sr_domain_03_git \
+    sr_domain_04_code \
+    sr_domain_05_containers \
+    sr_domain_06_k8s \
+    sr_domain_07_secrets \
+    sr_domain_08_observability \
+    sr_domain_09_iac \
+    sr_domain_10_automation
   do
-    sr_run_or_warn "$fn" must-only
+    # Use function name as the timer key — nice and unique
+    timer_wrap "$fn" sr_run_or_warn "$fn" must-only
   done
   ok "All MUST done"
 }

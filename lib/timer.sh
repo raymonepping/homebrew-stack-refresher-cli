@@ -5,12 +5,13 @@
 # Bash 4+ required for associative arrays (you're on Bash 5 ✅)
 declare -gA _TIMER_START_EPOCH=()
 declare -gA _TIMER_START_HUMAN=()
+declare -gA __TIMER_START_EPOCH=()
 
 # Start a timer: timer_start "Some Label"
 timer_start() {
   local key="${1:-default}"
-  _TIMER_START_EPOCH["$key"]="$(date +%s)"
-  _TIMER_START_HUMAN["$key"]="$(date '+%H:%M:%S')"
+  __TIMER_START_EPOCH["$key"]="$(date +%s)"
+  export START_TIME_HUMAN="$(date "+%H:%M:%S")"
 }
 
 # Pretty format seconds → "1h 02m 05s" / "2m 07s" / "37s"
@@ -66,4 +67,13 @@ timer_wrap() {
   "$@" || rc=$?
   timer_end "$key"
   return "$rc"
+}
+
+timer_elapsed_sec() {
+  local key="${1:-default}"
+  local now start dur
+  now="$(date +%s)"
+  start="${__TIMER_START_EPOCH["$key"]:-$now}"
+  dur=$(( now - start ))
+  printf '%s\n' "$dur"
 }

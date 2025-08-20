@@ -386,6 +386,14 @@ sr_brew_maybe_upgrade() {
 }
 
 # helpers.sh
+timer_wrap() {
+  local key="$1"; shift
+  timer_start "$key"
+  "$@"
+  timer_end_say "$key"
+}
+
+# helpers.sh
 timer_end_say() {
   local key="${1:-default}"
   while IFS= read -r line; do
