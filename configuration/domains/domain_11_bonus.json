@@ -1,0 +1,10 @@
+{
+  "domain": "bonus",
+  "title": "Bonus Tools",
+  "version": "1.0.0",
+  "tools": {
+    "must": ["parallel", "watchexec", "entr"],
+    "should": ["hyperfine", "cron", "tmuxinator"],
+    "could": ["at", "tmux-resurrect"]
+  }
+}

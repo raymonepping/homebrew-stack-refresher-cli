@@ -66,7 +66,7 @@
     "installed": true,
     "version": "9.9p2",
     "source": "path",
-    "last_checked": "2025-08-20T11:32:41Z",
+    "last_checked": "2025-08-20T12:33:37Z",
     "domains": [
       "SSH & Key Management"
     ]
@@ -348,6 +348,24 @@
     "last_checked": "2025-08-20T12:17:39Z",
     "domains": [
       "Terminal & UX"
+    ]
+  },
+  "ssh-audit": {
+    "installed": true,
+    "version": "3.3.0",
+    "source": "path",
+    "last_checked": "2025-08-20T12:33:41Z",
+    "domains": [
+      "SSH & Key Management"
+    ]
+  },
+  "age": {
+    "installed": true,
+    "version": "1.2.1",
+    "source": "path",
+    "last_checked": "2025-08-20T12:33:45Z",
+    "domains": [
+      "SSH & Key Management"
     ]
   }
 }

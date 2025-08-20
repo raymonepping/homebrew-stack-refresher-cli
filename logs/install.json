@@ -415,3 +415,6 @@
 {"ts":"2025-08-20T14:17:25+02:00","domain":"Terminal & UX","tool":"fzf","level":"must","status":"installed"}
 {"ts":"2025-08-20T14:17:29+02:00","domain":"Terminal & UX","tool":"powerlevel10k","level":"must","status":"installed"}
 {"ts":"2025-08-20T14:17:38+02:00","domain":"Terminal & UX","tool":"raycast","level":"could","status":"installed"}
+{"ts":"2025-08-20T14:33:35+02:00","domain":"SSH & Key Management","tool":"openssh","level":"must","status":"installed"}
+{"ts":"2025-08-20T14:33:40+02:00","domain":"SSH & Key Management","tool":"ssh-audit","level":"should","status":"installed"}
+{"ts":"2025-08-20T14:33:45+02:00","domain":"SSH & Key Management","tool":"age","level":"could","status":"installed"}
