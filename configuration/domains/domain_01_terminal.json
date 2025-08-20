@@ -1,0 +1,10 @@
+{
+  "domain": "terminal",
+  "title": "Terminal & UX",
+  "version": "1.0.0",
+  "tools": {
+    "must": ["zsh", "tmux", "bat", "ripgrep", "eza", "fzf", "powerlevel10k"],
+    "should": ["fd", "zoxide", "atuin", "thefuck", "tldr"],
+    "could": ["raycast", "warp", "gum", "figlet", "lolcat", "dust", "procs", "starship", "zsh-autosuggestions", "zsh-syntax-highlighting"]
+  }
+}

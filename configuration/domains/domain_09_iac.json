@@ -1,0 +1,10 @@
+{
+  "domain": "iac",
+  "title": "Infrastructure as Code",
+  "version": "1.0.0",
+  "tools": {
+    "must": ["terraform", "tflint", "packer"],
+    "should": ["tfsec", "checkov", "terragrunt"],
+    "could": ["terraform-docs", "tfenv", "consul"]
+  }
+}

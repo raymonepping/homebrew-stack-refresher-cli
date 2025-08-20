@@ -1,0 +1,16 @@
+{
+  "cat":    { "replacement": "bat",   "flags": "--style=plain --paging=never", "reasoning": "Syntax highlighting & paging control" },
+  "grep":   { "replacement": "rg",    "flags": "--color=auto",                  "reasoning": "Faster, respects .gitignore" },
+  "find":   { "replacement": "fd",    "flags": "",                              "reasoning": "Simpler, faster search with sane defaults" },
+  "ls":     { "replacement": "eza",   "flags": "--group-directories-first --icons", "reasoning": "Icons, better formatting, git awareness" },
+  "diff":   { "replacement": "delta", "flags": "",                              "reasoning": "Syntax-highlighted diffs" },
+  "du":     { "replacement": "dust",  "flags": "",                              "reasoning": "Better visualization of disk usage" },
+  "top":    { "replacement": "btm",   "flags": "",                              "reasoning": "Rich terminal UI for process monitoring (bottom → btm)" },
+  "ps":     { "replacement": "procs", "flags": "",                              "reasoning": "Rich output with colors and headers" },
+  "history":{ "replacement": "atuin", "flags": "",                              "reasoning": "Searchable shell history with context" },
+  "ping":   { "replacement": "gping", "flags": "",                              "reasoning": "Graphical ping output" },
+  "clear":  { "replacement": "clear && printf '\\\\e[3J'", "flags": "",         "reasoning": "Fully clears scrollback in most terminals" },
+  "scp":    { "replacement": "rsync", "flags": "-avz --progress",               "reasoning": "More control, compression, and resume support" },
+  "curl":   { "replacement": "http",  "flags": "",                              "reasoning": "Cleaner HTTP output with color & formatting (httpie)" },
+  "watch":  { "replacement": "viddy", "flags": "",                              "reasoning": "Modern watch with diffs and syntax highlighting" }
+}

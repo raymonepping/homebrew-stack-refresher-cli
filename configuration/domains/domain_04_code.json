@@ -1,0 +1,10 @@
+{
+  "domain": "code",
+  "title": "Code & Dev Tools",
+  "version": "1.0.0",
+  "tools": {
+    "must": ["just", "direnv", "shellcheck"],
+    "should": ["vscode", "prettier", "asdf", "jsonlint", "yamllint", "eslint", "pylint"],
+    "could": ["shfmt", "black", "hadolint", "nvm", "pyenv", "mise", "commitizen", "lefthook"]
+  }
+}

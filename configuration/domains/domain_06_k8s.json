@@ -1,0 +1,12 @@
+{
+  "domain": "k8s",
+  "title": "Kubernetes (Local Dev)",
+  "version": "1.0.0",
+  "notes": "Cluster flavor is a one-of; the non-chosen one can be offered as SHOULD.",
+  "tools": {
+    "must": ["kubectl", "helm"],
+    "should": ["k9s", "stern"],
+    "could": ["kubectx", "kubens"]
+  },
+  "cluster_one_of": ["k3d", "kind", "k3s"]
+}

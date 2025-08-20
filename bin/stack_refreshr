@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export SR_ROOT="$ROOT"
+export SR_CONF="${SR_CONF:-$ROOT/configuration}"
+export SR_LIB="$ROOT/lib"
+export SR_LOGS="${SR_LOGS:-$ROOT/logs}"
+export SR_STATE="${SR_STATE:-$ROOT/state}"
+
+export SET_ALIASES="${SET_ALIASES:-0}"
+
+# Flags
+export DRY_RUN="${DRY_RUN:-0}"
+export VERBOSE="${VERBOSE:-0}"
+export PARALLEL="${PARALLEL:-1}"
+
+export HOMEBREW_NO_AUTO_UPDATE=1
+export HOMEBREW_NO_INSTALL_CLEANUP=1
+export HOMEBREW_NO_ENV_HINTS=1
+
+for f in "$SR_LIB"/domain_*.sh; do [ -r "$f" ] && . "$f"; done
+
+# Helpers
+have(){ command -v "$1" >/dev/null 2>&1; }
+warn(){ printf "⚠️  %s\n" "$*" >&2; }
+usage(){
+  cat <<EOF
+stack_refreshr
+Usage: stack_refreshr [--dry-run] [--verbose] [--sequential]
+Flags:
+  --dry-run       Show what would happen, don't install
+  --verbose       Print underlying commands
+  --sequential    Disable parallel installs
+EOF
+}
+
+# Args
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --dry-run) DRY_RUN=1 ;;
+    --verbose) VERBOSE=1 ;;
+    --sequential) PARALLEL=0 ;;
+    --set-aliases) SET_ALIASES=1 ;;
+  aliases)
+    shift
+    . "$SR_LIB/aliases.sh"
+    case "${1:-}" in
+      restore) sr_remove_aliases; exit 0 ;;
+      status)  shift || true
+               if [ "${1:-}" = "--json" ]; then sr_aliases_status --json; else sr_aliases_status; fi
+               exit 0 ;;
+      *) echo "Usage: stack_refreshr aliases {restore|status [--json]}"; exit 1 ;;
+    esac
+    ;;
+    -h|--help) usage; exit 0 ;;
+    *) warn "Unknown arg: $1" ;;
+  esac
+  shift
+done
+
+mkdir -p "$SR_LOGS" "$SR_STATE"
+
+# Source libs
+. "$SR_LIB/preflight.sh"
+. "$SR_LIB/ui.sh"
+. "$SR_LIB/install.sh"
+. "$SR_LIB/helpers.sh"
+. "$SR_LIB/domain_loader.sh"
+. "$SR_LIB/aliases.sh"
+
+[ "$SET_ALIASES" = "1" ] && sr_apply_aliases
+
+# Run
+preflight
+
+# Menu loop
+while true; do
+  choice="$(sr_menu_main || true)"
+  # If user hit Esc/Enter without choosing, reprompt silently
+  [ -n "${choice:-}" ] || continue
+
+case "${choice^^}" in
+  1)  sr_run_or_warn sr_domain_01_terminal ;;
+  2)  sr_run_or_warn sr_domain_02_ssh ;;
+  3)  sr_run_or_warn sr_domain_03_git ;;
+  4)  sr_run_or_warn sr_domain_04_code ;;
+  5)  sr_run_or_warn sr_domain_05_containers ;;
+  6)  sr_run_or_warn sr_domain_06_k8s ;;
+  7)  sr_run_or_warn sr_domain_07_secrets ;;
+  8)  sr_run_or_warn sr_domain_08_observability ;;
+  9)  sr_run_or_warn sr_domain_09_iac ;;
+  10) sr_run_or_warn sr_domain_10_automation ;;
+  A)  sr_install_all_must ;;
+  Q)  printf "👋 Bye!\n"; exit 0 ;;
+  *)  printf "⚠️  Invalid choice: %s\n" "$choice" ;;
+esac
+
+done

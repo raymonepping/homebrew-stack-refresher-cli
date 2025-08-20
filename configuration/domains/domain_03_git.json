@@ -1,0 +1,10 @@
+{
+  "domain": "git",
+  "title": "Git & Source Control",
+  "version": "1.0.0",
+  "tools": {
+    "must": ["git", "gh", "pre-commit", "delta"],
+    "should": ["lazygit", "gitleaks", "git-secrets"],
+    "could": ["git-cliff", "gpg"]
+  }
+}

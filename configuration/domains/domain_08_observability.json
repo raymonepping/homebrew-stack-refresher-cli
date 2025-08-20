@@ -1,0 +1,10 @@
+{
+  "domain": "observability",
+  "title": "Observability & Logs",
+  "version": "1.0.0",
+  "tools": {
+    "must": ["jq", "bottom", "lnav"],
+    "should": ["yq", "fx", "stern"],
+    "could": ["glow", "logrotate", "viddy", "gping", "duf", "btop", "htop", "httpie"]
+  }
+}

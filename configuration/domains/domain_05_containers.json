@@ -1,0 +1,15 @@
+{
+  "domain": "containers",
+  "title": "Containers & Runtimes",
+  "version": "1.0.0",
+  "notes": "On macOS we also install Colima as the VM layer. Engine is a one-of.",
+  "tools": {
+    "must": ["colima", "compose", "nomad"],
+    "should": ["trivy", "buildah", "skopeo"],
+    "could": ["ctop", "dive", "docker-slim", "syft", "grype"]
+  },
+  "engine_one_of": ["docker", "podman"],
+  "platform_constraints": {
+    "colima": ["darwin"]
+  }
+}

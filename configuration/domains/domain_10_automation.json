@@ -1,0 +1,10 @@
+{
+  "domain": "automation",
+  "title": "Automation & Scheduling",
+  "version": "1.0.0",
+  "tools": {
+    "must": ["parallel", "watchexec", "entr"],
+    "should": ["hyperfine", "cron", "tmuxinator"],
+    "could": ["at", "tmux-resurrect"]
+  }
+}

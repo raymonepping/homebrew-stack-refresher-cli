@@ -1,0 +1,10 @@
+{
+  "domain": "ssh",
+  "title": "SSH & Key Management",
+  "version": "1.0.0",
+  "tools": {
+    "must": ["openssh"],
+    "should": ["key-rotation-helper", "ssh-audit", "gh-key-upload"],
+    "could": ["age"]
+  }
+}
