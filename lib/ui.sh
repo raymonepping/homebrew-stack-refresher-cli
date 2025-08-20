@@ -15,23 +15,39 @@ _strip_ansi(){ sed -E 's/\x1B\[[0-9;]*[A-Za-z]//g'; }
 : "${SR_STATE:="$SR_ROOT/state"}"
 : "${SR_VERSION_STATE:="$SR_STATE/.base.version.state.json"}"
 
-# Map domain index -> title + JSON file
-_sr_domain_title() {
+# Icons (emoji) and plain ASCII labels per domain
+_sr_domain_icon() {
   case "$1" in
-    1)  echo "🖥️  Terminal & UX" ;;
-    2)  echo "🔑 SSH & Key Management" ;;
-    3)  echo "🧬 Git & Source Control" ;;
-    4)  echo "⚙️  Code & Dev Tools" ;;
-    5)  echo "🐳 Containers & Runtimes" ;;
-    6)  echo "⎈ Kubernetes (Local Dev)" ;;
-    7)  echo "🔐 Secrets & Certs" ;;
-    8)  echo "📊 Observability & Logs" ;;
-    9)  echo "🏗️  Infrastructure as Code" ;;
-    10) echo "⏱️  Automation & Scheduling" ;;
-    11) echo "🌟 Bonus Tools (CLI Suite)" ;;
+    1)  echo "🖥️" ;;
+    2)  echo "🔑" ;;
+    3)  echo "🧬" ;;
+    4)  echo "⚙️" ;;
+    5)  echo "🐳" ;;
+    6)  echo "⎈" ;;
+    7)  echo "🔐" ;;
+    8)  echo "📊" ;;
+    9)  echo "🏗️" ;;
+    10) echo "⏱️" ;;
+    11) echo "🌟" ;;
+  esac
+}
+_sr_domain_label() {
+  case "$1" in
+    1)  echo "Terminal & UX" ;;
+    2)  echo "SSH & Key Management" ;;
+    3)  echo "Git & Source Control" ;;
+    4)  echo "Code & Dev Tools" ;;
+    5)  echo "Containers & Runtimes" ;;
+    6)  echo "Kubernetes (Local Dev)" ;;
+    7)  echo "Secrets & Certs" ;;
+    8)  echo "Observability & Logs" ;;
+    9)  echo "Infrastructure as Code" ;;
+    10) echo "Automation & Scheduling" ;;
+    11) echo "Bonus Tools (CLI Suite)" ;;
   esac
 }
 
+# Domain -> JSON path (same as before)
 _sr_domain_json() {
   case "$1" in
     1)  echo "$SR_CONF/domains/domain_01_terminal.json" ;;
@@ -48,110 +64,154 @@ _sr_domain_json() {
   esac
 }
 
-# --- width-aware padding (rough but effective with emoji) ---
-# Count "visible width": ASCII =1, non-ASCII (incl. emoji) =2
+# Remove VS16/VS15 + ZWJ so display matches our width calculation
+_strip_zw() {
+  # FE0F, FE0E, ZWJ
+  sed -e 's/\xEF\xB8\x8F//g' -e 's/\xEF\xB8\x8E//g' -e 's/\xE2\x80\x8D//g'
+}
+
+# --- width-aware padding (no awk [:ascii:] class; robust on macOS) ---
 _visible_width() {
-  # strip ANSI first
+  # Strip ANSI first
   local s; s="$(printf '%s' "$1" | sed -E 's/\x1B\[[0-9;]*[A-Za-z]//g')"
-  awk -v str="$s" '
-    BEGIN{
-      n = split(str, a, "")
-      w = 0
-      for (i=1; i<=n; i++) {
-        c = a[i]
-        if (ord(c) > 127) w += 2; else w += 1
-      }
-      print w
-    }
-    function ord(ch,   cmd, r) {
-      cmd = "printf \"%d\" \'" ch "\'"
-      cmd | getline r
-      close(cmd)
-      return r
-    }
-  '
+
+  # Remove Variation Selectors & ZWJ (zero-width)
+  #   U+FE0F (VS16): \xEF\xB8\x8F
+  #   U+FE0E (VS15): \xEF\xB8\x8E
+  #   U+200D (ZWJ):  \xE2\x80\x8D
+  s="$(printf '%s' "$s" \
+      | sed -e 's/\xef\xb8\x8f//g' \
+            -e 's/\xef\xb8\x8e//g' \
+            -e 's/\xe2\x80\x8d//g')"
+
+  # Count total chars (multibyte-aware) and ASCII chars only
+  local total ascii non
+  total=$(printf '%s' "$s" | wc -m | awk '{print $1}')
+  ascii=$(printf '%s' "$s" | LC_ALL=C tr -cd '\000-\177' | wc -m | awk '{print $1}')
+  non=$(( total - ascii ))
+
+  # Start with: ASCII=1, non-ASCII≈2
+  local w=$(( ascii + non * 2 ))
+
+  # Adjust for symbols that render single-width even though they are non-ASCII.
+  # - Kubernetes helm symbol U+2388 "⎈" usually renders as width=1 in common terminal fonts.
+  #   Each occurrence was counted as 2 above; subtract 1 per hit.
+  local helm_count
+  helm_count=$(printf '%s' "$s" | grep -o '⎈' | wc -l | awk '{print $1}')
+  if [ "$helm_count" -gt 0 ]; then
+    w=$(( w - helm_count ))
+  fi
+
+  printf '%d\n' "$w"
 }
 
-_pad_cell() {
-  # _pad_cell "text" 28  -> text padded with spaces to ~28 display cells
-  local text="$1" target="$2"
-  local w; w="$(_visible_width "$text")"
-  local pad=$(( target - w ))
+# Pad the entire left block to a target column (in display cells)
+_pad_to_col() {
+  local left="$1" target="$2"
+  local w pad
+  w="$(_visible_width "$left")"
+  pad=$(( target - w ))
   if [ "$pad" -lt 1 ]; then
-    printf "%s" "$text"
+    printf "%s" "$left"
   else
-    printf "%s%*s" "$text" "$pad" ""
+    printf "%s%*s" "$left" "$pad" ""
   fi
 }
 
-# Calculate domain status by checking if all MUST tools are installed in state
-_sr_domain_status_line() {
+# Emit one aligned row: index + icon + space + label, padded to STATUS_COL, then status
+_emit_row() {
+  local idx="$1" icon="$2" label="$3" status="$4"
+  local STATUS_COL=46   # tweak if you want the status a bit more left/right
+  local INDENT="  "
+
+  local left_prefix left_block
+  left_prefix="$(printf "%s%2s: " "$INDENT" "$idx")"
+  left_block="${left_prefix}${icon} ${label}"
+  _pad_to_col "$left_block" "$STATUS_COL"
+  printf "%s\n" "$status"
+}
+
+# Calculate domain status by checking MUST tools, then print with _emit_row
+_sr_row_parts() {
   local idx="$1"
-  local title="$(_sr_domain_title "$idx")"
+  local icon="$(_sr_domain_icon "$idx")"
+  local label="$(_sr_domain_label "$idx")"
   local json="$(_sr_domain_json "$idx")"
-  local left right status_phrase
-  local TITLE_COLS=28
 
-  # Bonus tools: just show as available (no status math)
+  local left_prefix left_block status_phrase
+  left_prefix="$(printf "  %2s: " "$idx")"
+  left_block="${left_prefix}${icon} ${label}"
+
+  # Bonus menu (no state math)
   if [ "$idx" = "11" ]; then
-    left="$(printf "%2s: " "$idx")"
-    right="  🧩 Available"
-    printf "%s%s%s\n" "$left" "$(_pad_cell "$title" "$TITLE_COLS")" "$right"
+    printf "%s\t%s\n" "$left_block" "🧩 Available"
     return
   fi
 
-  # No jq / no state / no json -> neutral pending
-  if ! have jq || [ ! -f "$SR_VERSION_STATE" ] || [ ! -s "$SR_VERSION_STATE" ] || [ ! -f "$json" ]; then
-    left="$(printf "%2s: " "$idx")"
-    right="  🕒 Pending"
-    printf "%s%s%s\n" "$left" "$(_pad_cell "$title" "$TITLE_COLS")" "$right"
+  # If we can’t evaluate state, show Pending
+  if ! have jq || [ ! -s "$SR_VERSION_STATE" ] || [ ! -f "$json" ]; then
+    printf "%s\t%s\n" "$left_block" "🕒 Pending"
     return
   fi
 
-  # pull MUST tools for this domain
-  local tools
+  # MUST tools for domain
+  local tools total=0 okc=0
   tools="$(jq -r '.tools.must[]?' "$json" 2>/dev/null || true)"
   if [ -z "$tools" ]; then
-    left="$(printf "%2s: " "$idx")"
-    right="  🕒 Pending"
-    printf "%s%s%s\n" "$left" "$(_pad_cell "$title" "$TITLE_COLS")" "$right"
+    printf "%s\t%s\n" "$left_block" "🕒 Pending"
     return
   fi
 
-  # count installed in state
-  local total=0 okc=0
+  # Count installed
   while IFS= read -r t; do
     [ -n "$t" ] || continue
     total=$((total+1))
-    if jq -e --arg tool "$t" '.[ $tool ].installed == true' "$SR_VERSION_STATE" >/dev/null 2>&1; then
-      okc=$((okc+1))
-    fi
+    jq -e --arg tool "$t" '.[ $tool ].installed == true' "$SR_VERSION_STATE" >/dev/null 2>&1 && okc=$((okc+1))
   done <<< "$tools"
 
   if [ "$total" -gt 0 ] && [ "$okc" -eq "$total" ]; then
-    status_phrase="✅ Complete"
+    status_phrase="✅ Complete $okc/$total"
   else
-    status_phrase="🕒 Pending"
+    status_phrase="🕒 Pending $okc/$total"
   fi
 
-  left="$(printf "%2s: " "$idx")"
-  right="$(printf "  %s %d/%d" "$status_phrase" "$okc" "$total")"
-  printf "%s%s%s\n" "$left" "$(_pad_cell "$title" "$TITLE_COLS")" "$right"
+  printf "%s\t%s\n" "$left_block" "$status_phrase"
 }
 
-# Build the menu lines with live status
+# Build menu with live status, perfectly aligned to the widest left block
 _sr_build_menu_items() {
-  local items=()
-  local i
+  local LEFTS=() STATUSES=() i parts left status
+  local max_left=0 w
+
+  # Collect and measure
   for i in {1..11}; do
-    items+=("$(_sr_domain_status_line "$i")")
+    parts="$(_sr_row_parts "$i")"
+    left="${parts%%$'\t'*}"
+    status="${parts#*$'\t'}"
+    LEFTS+=("$left")
+    STATUSES+=("$status")
+    w="$(_visible_width "$left")"
+    [ "$w" -gt "$max_left" ] && max_left="$w"
   done
-  items+=(" A: Install ALL MUST (all domains)")
-  items+=(" Q: Quit")
-  printf '%s\n' "${items[@]}"
+
+  # Single column for all rows: max left width + a small gap
+  local STATUS_COL=$(( max_left + 2 ))
+
+  # Emit aligned rows
+  # Emit aligned rows
+  for i in "${!LEFTS[@]}"; do
+    # Make printed left match what _visible_width() measured
+    clean_left="$(printf '%s' "${LEFTS[$i]}" | _strip_zw)"
+    _pad_to_col "$clean_left" "$STATUS_COL"
+    printf "%s\n" "${STATUSES[$i]}"
+  done
+
+  # Action lines (use same indent)
+  printf '%s\n' "  A: Install ALL MUST (all domains)"
+  printf '%s\n' "  Q: Quit"
 }
 
-# Map a short answer (1..11/A/Q) to the visible line prefix (so caller can route)
+# Map quick keys -> token
 _sr_map_quick_choice() {
   local ans="$1"
   case "$ans" in
@@ -165,72 +225,51 @@ _sr_map_quick_choice() {
   esac
 }
 
-# Present main menu and return the selection token on STDOUT:
-# 1..11 / A / Q
+# Main menu: returns 1..11 / A / Q on STDOUT
 sr_menu_main() {
-  # Render header
   hr
   say "🧭 stack_refreshr — Main Menu"
   hr
 
   # Build items with live status
   mapfile -t items < <(_sr_build_menu_items)
-  for it in "${items[@]:0:11}"; do say "  $it"; done
-  say "  ${items[11]}"
-  say "  ${items[12]}"
-  hr
-
-  # If gum is available, immediately enable arrow navigation without echoing escape codes.
-  # Still support single-key shortcuts: 1–11/A/Q (no Enter needed).
+  for it in "${items[@]:0:11}"; do say "$it"; done   # <- no leading "  "
+  say "${items[11]}"
+  say "${items[12]}"
+  
   local picked="" ans=""
   if have gum; then
     say "Use ↑/↓ then Enter, or press [1–11/A/Q] for quick select…"
     IFS= read -r -n1 -s ans </dev/tty || ans=""
     case "$ans" in
-      [1-9])
-        picked="$(_sr_map_quick_choice "$ans")"
-        ;;
-      1)  picked="1" ;; 2) picked="2" ;; 3) picked="3" ;;
-      A|a|Q|q)
-        picked="$(_sr_map_quick_choice "$ans")"
-        ;;
+      [1-9]) picked="$(_sr_map_quick_choice "$ans")" ;;
+      A|a|Q|q) picked="$(_sr_map_quick_choice "$ans")" ;;
       0)
         IFS= read -r -n1 -s ans2 </dev/tty || ans2=""
-        case "${ans}${ans2}" in
-          10) picked="10" ;;
-          11) picked="11" ;;
-          *)  picked="" ;;
-        esac
+        case "${ans}${ans2}" in 10) picked="10" ;; 11) picked="11" ;; esac
         ;;
       *)
-        picked="$(printf '%s\n' "${items[@]}" \
-          | gum choose --header 'Select a domain or action (↑/↓, Enter)')" || picked=""
+        picked="$(printf '%s\n' "${items[@]}" | gum choose --header 'Select a domain or action (↑/↓, Enter)')" || picked=""
         ;;
     esac
   elif have fzf; then
-    picked="$(printf '%s\n' "${items[@]}" \
-      | fzf --prompt='Select > ' --height=80% --border)" || picked=""
+    picked="$(printf '%s\n' "${items[@]}" | fzf --prompt='Select > ' --height=80% --border)" || picked=""
   else
     say "Type 1–11 / A / Q and press Enter:"
     IFS= read -r ans || ans=""
-    ans="$(_trim "$ans")"
-    picked="$(_sr_map_quick_choice "$ans")"
+    picked="$(_sr_map_quick_choice "$(_trim "$ans")")"
   fi
 
-  # Reduce gum/fzf full-line selection to token if needed
+  # Reduce an entire selected line (from gum/fzf) to the token
   if [ -n "$picked" ] && [[ "$picked" != [0-9AQaq]* ]]; then
     picked="$(printf '%s' "$picked" | _strip_ansi | tr -d '\r')"
     picked="$(_trim "$picked")"
     case "$picked" in
-      [0-9]*:*) picked="${picked%%:*}";;
-      "A:"*)    picked="A";;
-      "Q:"*)    picked="Q";;
+      [0-9]*:*) picked="${picked%%:*}" ;;
+      "A:"*)    picked="A" ;;
+      "Q:"*)    picked="Q" ;;
       "A"|"Q")  ;;
-      *)
-        if [[ "$picked" =~ ^([0-9]+) ]]; then
-          picked="${BASH_REMATCH[1]}"
-        fi
-        ;;
+      *) [[ "$picked" =~ ^([0-9]+) ]] && picked="${BASH_REMATCH[1]}" ;;
     esac
   fi
 
@@ -241,7 +280,6 @@ sr_menu_main() {
 sr_select_multi() {
   local prompt="$1"; shift
   local items=("$@")
-
   local out
   if have gum; then
     out="$(printf '%s\n' "${items[@]}" | gum choose --no-limit --cursor="▶" --header "$prompt" || true)"
@@ -259,7 +297,6 @@ sr_select_multi() {
     done
     out="$(printf '%s\n' "${sel[@]:-}")"
   fi
-
   out="$(printf '%s\n' "$out" | _strip_ansi | tr -d '\r' | sed '/^$/d')"
   [ -n "$out" ] && printf '%s\n' "$out"
 }

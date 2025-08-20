@@ -428,3 +428,17 @@
 {"ts":"2025-08-20T14:47:02+02:00","domain":"Containers & Runtimes","tool":"colima","level":"must","status":"installed"}
 {"ts":"2025-08-20T14:47:08+02:00","domain":"Containers & Runtimes","tool":"compose","level":"must","status":"installed"}
 {"ts":"2025-08-20T14:47:08+02:00","domain":"Containers & Runtimes","tool":"nomad","level":"must","status":"installed"}
+{"ts":"2025-08-20T15:07:07+02:00","domain":"Terminal & UX","tool":"zsh","level":"must","status":"installed"}
+{"ts":"2025-08-20T15:07:09+02:00","domain":"Terminal & UX","tool":"tmux","level":"must","status":"installed"}
+{"ts":"2025-08-20T15:07:10+02:00","domain":"Terminal & UX","tool":"bat","level":"must","status":"installed"}
+{"ts":"2025-08-20T15:07:15+02:00","domain":"Terminal & UX","tool":"ripgrep","level":"must","status":"installed"}
+{"ts":"2025-08-20T15:07:15+02:00","domain":"Terminal & UX","tool":"eza","level":"must","status":"installed"}
+{"ts":"2025-08-20T15:07:15+02:00","domain":"Terminal & UX","tool":"fzf","level":"must","status":"installed"}
+{"ts":"2025-08-20T15:07:20+02:00","domain":"Terminal & UX","tool":"powerlevel10k","level":"must","status":"installed"}
+{"ts":"2025-08-20T15:29:34+02:00","domain":"Terminal & UX","tool":"zsh","level":"must","status":"installed"}
+{"ts":"2025-08-20T15:29:36+02:00","domain":"Terminal & UX","tool":"tmux","level":"must","status":"installed"}
+{"ts":"2025-08-20T15:29:38+02:00","domain":"Terminal & UX","tool":"bat","level":"must","status":"installed"}
+{"ts":"2025-08-20T15:29:44+02:00","domain":"Terminal & UX","tool":"ripgrep","level":"must","status":"installed"}
+{"ts":"2025-08-20T15:29:44+02:00","domain":"Terminal & UX","tool":"eza","level":"must","status":"installed"}
+{"ts":"2025-08-20T15:29:44+02:00","domain":"Terminal & UX","tool":"fzf","level":"must","status":"installed"}
+{"ts":"2025-08-20T15:29:50+02:00","domain":"Terminal & UX","tool":"powerlevel10k","level":"must","status":"installed"}
