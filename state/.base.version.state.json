@@ -3,7 +3,7 @@
     "installed": true,
     "version": "5.9",
     "source": "brew",
-    "last_checked": "2025-08-20T15:06:48Z",
+    "last_checked": "2025-08-20T15:12:12Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -11,8 +11,8 @@
   "tmux": {
     "installed": true,
     "version": "3.5a",
-    "source": "brew",
-    "last_checked": "2025-08-20T15:06:49Z",
+    "source": "path",
+    "last_checked": "2025-08-20T15:12:12Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -21,7 +21,7 @@
     "installed": true,
     "version": "0.25.0",
     "source": "path",
-    "last_checked": "2025-08-20T15:06:50Z",
+    "last_checked": "2025-08-20T15:12:13Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -29,8 +29,8 @@
   "ripgrep": {
     "installed": true,
     "version": "14.1.1",
-    "source": "path",
-    "last_checked": "2025-08-20T15:06:55Z",
+    "source": "brew",
+    "last_checked": "2025-08-20T15:12:19Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -39,7 +39,7 @@
     "installed": true,
     "version": "0.23.0",
     "source": "path",
-    "last_checked": "2025-08-20T15:06:55Z",
+    "last_checked": "2025-08-20T15:12:19Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -48,7 +48,7 @@
     "installed": true,
     "version": "0.65.1",
     "source": "path",
-    "last_checked": "2025-08-20T15:06:55Z",
+    "last_checked": "2025-08-20T15:12:19Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -57,7 +57,7 @@
     "installed": true,
     "version": "1.20.0",
     "source": "path",
-    "last_checked": "2025-08-20T15:07:01Z",
+    "last_checked": "2025-08-20T15:12:25Z",
     "domains": [
       "Terminal & UX"
     ]

@@ -15,17 +15,11 @@ export DRY_RUN="${DRY_RUN:-0}"
 export VERBOSE="${VERBOSE:-0}"
 export PARALLEL="${PARALLEL:-1}"
 
-# Telemetry defaults
-export SR_TELEM_CFG="${SR_TELEM_CFG:-$HOME/.config/stack_refreshr/telemetry.json}"
-export TELEM_ENABLED="${TELEM_ENABLED:-0}"
-export TELEM_DRY_RUN="${TELEM_DRY_RUN:-0}"
-
-# Homebrew noise control
 export HOMEBREW_NO_AUTO_UPDATE=1
 export HOMEBREW_NO_INSTALL_CLEANUP=1
 export HOMEBREW_NO_ENV_HINTS=1
 
-# Load domain entrypoints
+# Auto-load domain files
 for f in "$SR_LIB"/domain_*.sh; do [ -r "$f" ] && . "$f"; done
 
 # Helpers
@@ -34,78 +28,62 @@ warn(){ printf "⚠️  %s\n" "$*" >&2; }
 usage(){
   cat <<EOF
 stack_refreshr
-Usage: stack_refreshr [--dry-run] [--verbose] [--sequential] [--enable-telemetry] [--telemetry-config PATH]
+Usage: stack_refreshr [--dry-run] [--verbose] [--sequential] [--enable-telemetry] [--telemetry-config FILE]
+       stack_refreshr telemetry {explain|show|dryrun}
 Flags:
-  --dry-run             Show what would happen, don't install
-  --verbose             Print underlying commands
-  --sequential          Disable parallel installs
-  --enable-telemetry    Enable telemetry for this run (opt-in)
-  --telemetry-config    Override telemetry config path
-
-Commands:
-  telemetry explain     Show what is collected and why
-  telemetry show        View current telemetry config
-  telemetry dryrun      Simulate a telemetry send (no upload)
-  aliases {restore|status [--json]}
+  --dry-run            Show what would happen, don't install
+  --verbose            Print underlying commands
+  --sequential         Disable parallel installs
+  --enable-telemetry   Enable telemetry for this run (can also be enabled in config)
+  --telemetry-config   Path to telemetry.json (default: ~/.config/stack_refreshr/telemetry.json)
 EOF
 }
 
-# Args
+# Parse args (includes telemetry subcommands)
 while [ $# -gt 0 ]; do
   case "$1" in
     --dry-run) DRY_RUN=1 ;;
     --verbose) VERBOSE=1 ;;
     --sequential) PARALLEL=0 ;;
     --enable-telemetry) TELEM_ENABLED=1 ;;
-    --telemetry-config)
-      shift
-      if [ $# -eq 0 ]; then warn "--telemetry-config requires a path"; exit 1; fi
-      SR_TELEM_CFG="$1"
-      ;;
+    --telemetry-config) shift; SR_TELEM_CFG="$1" ;;
     telemetry)
-      shift || true
-      sub="${1:-}"; shift || true
-      case "$sub" in
+      shift
+      . "$SR_LIB/telemetry.sh"   # make sure CLI subcommands can run even outside menu
+      case "${1:-}" in
         explain)
           cat <<'TXT'
 Telemetry is opt-in. We collect anonymous domain/status/version/duration/timestamps.
-Upload uses GitHub Gist via gh or token from env/keychain. No usernames, no paths.
-Use --enable-telemetry and put your Gist ID in ~/.config/stack_refreshr/telemetry.json.
+Upload uses GitHub Gist. No token in code. Token is discovered from env/gh/keychain.
 TXT
           exit 0
           ;;
         show)
-          echo "Config path: ${SR_TELEM_CFG:-unset}"
-          if [ -s "${SR_TELEM_CFG:-}" ]; then
-            cat "$SR_TELEM_CFG"
-          else
-            echo "(no config file)"
-          fi
+          echo "Config file: ${SR_TELEM_CFG:-unset}"
+          [ -s "${SR_TELEM_CFG:-}" ] && cat "$SR_TELEM_CFG" || echo "(no config file)"
           exit 0
           ;;
         dryrun)
-          TELEM_DRY_RUN=1; TELEM_ENABLED=1
-          export TELEM_DRY_RUN TELEM_ENABLED SR_TELEM_CFG
-          . "$SR_LIB/telemetry.sh" 2>/dev/null || true
-          # domain, tool, duration, version, extra_json
-          telemetry_send_event "telemetry" "dryrun" 0 "n/a" '{"note":"dry-run test"}' || true
+          TELEM_DRY_RUN=1
+          export TELEM_DRY_RUN TELEM_ENABLED
+          telemetry_send_event "telemetry" "dryrun" 0 "n/a" '{"note":"dry-run test"}'
           exit 0
           ;;
         *)
-          echo "Usage: stack_refreshr telemetry {explain|show|dryrun}"; exit 1 ;;
+          echo "Usage: stack_refreshr telemetry {explain|show|dryrun}"
+          exit 1
+          ;;
       esac
       ;;
     --set-aliases) SET_ALIASES=1 ;;
     aliases)
-      shift || true
+      shift
       . "$SR_LIB/aliases.sh"
       case "${1:-}" in
         restore) sr_remove_aliases; exit 0 ;;
-        status)
-          shift || true
-          if [ "${1:-}" = "--json" ]; then sr_aliases_status --json; else sr_aliases_status; fi
-          exit 0
-          ;;
+        status)  shift || true
+                 if [ "${1:-}" = "--json" ]; then sr_aliases_status --json; else sr_aliases_status; fi
+                 exit 0 ;;
         *) echo "Usage: stack_refreshr aliases {restore|status [--json]}"; exit 1 ;;
       esac
       ;;
@@ -125,16 +103,11 @@ mkdir -p "$SR_LOGS" "$SR_STATE"
 . "$SR_LIB/domain_loader.sh"
 . "$SR_LIB/aliases.sh"
 . "$SR_LIB/timer.sh"
-
-# Load telemetry last (after helpers so 'say' exists); only if enabled/dryrun
-if [ "${TELEM_ENABLED:-0}" = "1" ] || [ "${TELEM_DRY_RUN:-0}" = "1" ]; then
-  export SR_TELEM_CFG TELEM_ENABLED TELEM_DRY_RUN
-  . "$SR_LIB/telemetry.sh" 2>/dev/null || true
-fi
+. "$SR_LIB/telemetry.sh"   # <-- IMPORTANT: make telemetry available in menu/flows
 
 [ "$SET_ALIASES" = "1" ] && sr_apply_aliases
 
-# Map menu numbers to domain functions (single source of truth)
+# Map menu numbers -> domain functions
 declare -A domain_map=(
   [1]=sr_domain_01_terminal
   [2]=sr_domain_02_ssh
@@ -147,30 +120,48 @@ declare -A domain_map=(
   [9]=sr_domain_09_iac
   [10]=sr_domain_10_automation
 )
-# Explicit order for ALL MUST (assoc arrays are not ordered)
+
+# Order for ALL MUST
 domain_order=(1 2 3 4 5 6 7 8 9 10)
 
-# Run a domain by numeric key, with a given mode (default: full)
+# Utility: make a nice domain slug for telemetry (e.g., "domain_01_terminal")
+sr_domain_slug() {
+  local num="$1"
+  local fn="${domain_map[$num]:-unknown}"
+  printf '%s' "$fn"
+}
+
+# Run a domain by numeric key, with mode (full|must), with timer + telemetry
 sr_run_domain() {
   local num="$1"; shift || true
   local mode="${1:-full}"
   local fn="${domain_map[$num]:-}"
-
   if [ -z "$fn" ]; then
     warn "No domain mapped for: $num"
     return 1
   fi
 
-  # Time-wrapped + error-safe
-  timer_wrap "$fn" sr_run_or_warn "$fn" "$mode"
+  local key="$fn"   # timer key == function name makes logs readable
+  timer_start "$key"
 
-  # Optional telemetry hook (domain-level event)
-  if [ "${TELEM_ENABLED:-0}" = "1" ] && declare -F telemetry_domain_event >/dev/null; then
-    telemetry_domain_event "$fn" "$mode" || true
+  # Run the domain
+  local status_txt="completed"
+  if ! sr_run_or_warn "$fn" "$mode"; then
+    status_txt="error"
   fi
+
+  # Duration (in seconds) BEFORE we end the timer (we still print pretty info)
+  local dur_sec; dur_sec="$(timer_elapsed_sec "$key")"
+
+  # Print the pretty timer lines to the UI
+  timer_end_say "$key"
+
+  # Send telemetry (respects config + --enable-telemetry)
+  telemetry_send_event "$(sr_domain_slug "$num")" "$status_txt" "$dur_sec" "" \
+    "$(printf '{"mode":"%s"}' "$mode")"
 }
 
-# ALL MUST using the same map
+# ALL MUST using same map/order
 sr_install_all_must() {
   say "🚀 Installing ALL MUST tools across domains…"
   timer_start "all_must"
@@ -178,11 +169,6 @@ sr_install_all_must() {
     sr_run_domain "$i" "must"
   done
   timer_end_say "all_must"
-
-  # Optional telemetry for the full batch
-  if [ "${TELEM_ENABLED:-0}" = "1" ] && declare -F telemetry_send_event >/dev/null; then
-    telemetry_send_event "runner" "all_must" 0 "n/a" '{}' || true
-  fi
 }
 
 # Run
@@ -194,9 +180,17 @@ while true; do
   [ -n "${choice:-}" ] || continue
 
   case "${choice^^}" in
-    [1-9]|10) sr_run_domain "$choice" "full" ;;
-    A)        sr_install_all_must ;;
-    Q)        printf "👋 Bye!\n"; exit 0 ;;
-    *)        printf "⚠️  Invalid choice: %s\n" "$choice" ;;
+    [1-9]|10)
+      sr_run_domain "$choice" "full"
+      ;;
+    A)
+      sr_install_all_must
+      ;;
+    Q)
+      printf "👋 Bye!\n"; exit 0
+      ;;
+    *)
+      printf "⚠️  Invalid choice: %s\n" "$choice"
+      ;;
   esac
 done

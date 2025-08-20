@@ -496,3 +496,10 @@
 {"ts":"2025-08-20T17:06:55+02:00","domain":"Terminal & UX","tool":"fzf","level":"must","status":"installed"}
 {"ts":"2025-08-20T17:07:00+02:00","domain":"Terminal & UX","tool":"powerlevel10k","level":"must","status":"installed"}
 {"ts":"2025-08-20T17:07:36+02:00","domain":"SSH & Key Management","tool":"openssh","level":"must","status":"installed"}
+{"ts":"2025-08-20T17:12:10+02:00","domain":"Terminal & UX","tool":"zsh","level":"must","status":"installed"}
+{"ts":"2025-08-20T17:12:12+02:00","domain":"Terminal & UX","tool":"tmux","level":"must","status":"installed"}
+{"ts":"2025-08-20T17:12:12+02:00","domain":"Terminal & UX","tool":"bat","level":"must","status":"installed"}
+{"ts":"2025-08-20T17:12:17+02:00","domain":"Terminal & UX","tool":"ripgrep","level":"must","status":"installed"}
+{"ts":"2025-08-20T17:12:19+02:00","domain":"Terminal & UX","tool":"eza","level":"must","status":"installed"}
+{"ts":"2025-08-20T17:12:19+02:00","domain":"Terminal & UX","tool":"fzf","level":"must","status":"installed"}
+{"ts":"2025-08-20T17:12:24+02:00","domain":"Terminal & UX","tool":"powerlevel10k","level":"must","status":"installed"}
