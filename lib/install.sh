@@ -76,6 +76,50 @@ _sr_repo_root() {
   cd "$here/.." && pwd
 }
 
+#############################################
+# Tmux Config (samoshkin/tmux-config)
+#############################################
+#############################################
+# Tmux Config (samoshkin/tmux-config)
+#############################################
+install_tmux_config() {
+  if ! command -v tmux >/dev/null 2>&1; then
+    warn "tmux not installed; skipping tmux-config setup"
+    return 0
+  fi
+
+  local TMUX_CONFIG_DIR="$HOME/.tmux-config"
+  local TMUX_CONFIG_REPO="https://github.com/samoshkin/tmux-config.git"
+
+  # If already cloned, skip reclone
+  if [ -d "$TMUX_CONFIG_DIR" ]; then
+    ok "tmux-config already present at $TMUX_CONFIG_DIR"
+  else
+    if ! command -v git >/dev/null 2>&1; then
+      warn "git required to fetch tmux-config; skipping"
+      return 0
+    fi
+    ok "Cloning tmux-config…"
+    git clone --depth=1 "$TMUX_CONFIG_REPO" "$TMUX_CONFIG_DIR" >/dev/null 2>&1 || {
+      warn "git clone failed for $TMUX_CONFIG_REPO"
+      return 0
+    }
+  fi
+
+  # Backup existing tmux.conf once
+  if [ -f "$HOME/.tmux.conf" ] && [ ! -f "$HOME/.tmux.conf.bak" ]; then
+    cp "$HOME/.tmux.conf" "$HOME/.tmux.conf.bak"
+    ok "Backed up ~/.tmux.conf to ~/.tmux.conf.bak"
+  fi
+
+  # Run upstream installer (idempotent)
+  if bash "$TMUX_CONFIG_DIR/install.sh" >/dev/null 2>&1; then
+    ok "tmux-config installed"
+  else
+    warn "tmux-config installer reported an issue (continuing)"
+  fi
+}
+
 _sr_setup_p10k() {
   local rc root tpl1 tpl2
   rc="$(_sr_rc_file)"
@@ -168,6 +212,9 @@ _sr_post_install_integration() {
     powerlevel10k)
       _sr_setup_p10k
       ;;
+    tmux)
+      install_tmux_config
+      ;;      
   esac
 }
 
@@ -417,7 +464,7 @@ sr_install_tool() {
     sr_log_json "$domain" "$tool" "$level" "installed"
     ok "$tool (already installed)"
     case "$tool" in
-      thefuck|zoxide|starship|atuin|zsh-autosuggestions|zsh-syntax-highlighting|powerlevel10k)
+      thefuck|zoxide|starship|atuin|zsh-autosuggestions|zsh-syntax-highlighting|powerlevel10k|tmux)
         _sr_post_install_integration "$tool"
         ;;
     esac
@@ -453,7 +500,7 @@ sr_install_tool() {
 
   # Post-install shell wiring where needed
   case "$tool" in
-    thefuck|zoxide|starship|atuin|zsh-autosuggestions|zsh-syntax-highlighting|powerlevel10k)
+    thefuck|zoxide|starship|atuin|zsh-autosuggestions|zsh-syntax-highlighting|powerlevel10k|tmux)
       _sr_post_install_integration "$tool"
       ;;
   esac

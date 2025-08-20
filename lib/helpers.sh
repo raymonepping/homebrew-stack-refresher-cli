@@ -156,17 +156,38 @@ sr_cmd_version() {
   command -v "$cmd" >/dev/null 2>&1 || return 0
 
   case "$cmd" in
-    kubectl)
-      # kubectl version --client --short → "Client Version: v1.xx.y"
+kubectl)
+      # Prefer JSON (more stable across locales), then fall back to --client --short
+      # Try: kubectl version -o json → .clientVersion.gitVersion (e.g. "v1.33.4")
+      if command -v jq >/dev/null 2>&1; then
+        kubectl version -o json 2>/dev/null \
+          | jq -r '.clientVersion.gitVersion // empty' \
+          | sed -e 's/^v//' \
+          | head -n1 && return 0
+      fi
+      # Fallback: kubectl version --client --short → "Client Version: v1.xx.y"
       kubectl version --client --short 2>/dev/null \
         | grep -Eo 'v[0-9]+(\.[0-9]+){1,2}' \
+        | sed -e 's/^v//' \
         | head -n1 || true
       return 0
       ;;
     helm)
-      # helm version --short → "v3.xx.y+g<hash>"
+      # helm version --short → e.g. "v3.18.5+gXXXX"
       helm version --short 2>/dev/null \
-        | grep -Eo 'v[0-9]+(\.[0-9]+){1,2}' \
+        | grep -Eo 'v?[0-9]+(\.[0-9]+){1,2}' \
+        | sed -e 's/^v//' \
+        | head -n1 || true
+      return 0
+      ;;
+
+    parallel)
+      # GNU parallel --version → "GNU parallel 20250122"
+      # Capture either yyyyMMdd or semver
+      local line
+      line="$(parallel --version 2>/dev/null | head -n1)"
+      printf "%s\n" "$line" \
+        | grep -Eo '([0-9]{8}|[0-9]+(\.[0-9]+){1,2})' \
         | head -n1 || true
       return 0
       ;;
@@ -177,14 +198,7 @@ sr_cmd_version() {
         | head -n1 || true
       return 0
       ;;
-    parallel)
-      # GNU parallel --version → first line has version
-      parallel --version 2>/dev/null \
-        | head -n1 \
-        | grep -Eo '[0-9]+(\.[0-9]+){1,2}' \
-        | head -n1 || true
-      return 0
-      ;;
+
     jq)
       jq --version 2>/dev/null \
         | grep -Eo '[0-9]+(\.[0-9]+){1,2}' \
