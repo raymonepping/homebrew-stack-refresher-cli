@@ -75,9 +75,17 @@ _sr_install_ohmyzsh() {
   fi
 }
 
+# Resolve repo root from this file location (lib/ -> repo root)
+_sr_repo_root() {
+  local here
+  here="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+  cd "$here/.." && pwd
+}
+
 # Setup Powerlevel10k + OMZ theme, idempotent
 _sr_setup_p10k() {
-  local rc; rc="$(_sr_rc_file)"
+  local rc root tpl1 tpl2
+  rc="$(_sr_rc_file)"
   have zsh || brew install zsh >/dev/null 2>&1 || true
   _sr_install_ohmyzsh || warn "oh-my-zsh install skipped or failed"
 
@@ -98,6 +106,18 @@ _sr_setup_p10k() {
     printf '%s\n' 'ZSH_THEME="powerlevel10k/powerlevel10k"' >> "$rc"
   fi
 
+  # If a repo-scoped p10k config exists, apply it
+  root="$(_sr_repo_root)"
+  tpl1="$root/configuration/.p10k.zsh"
+  tpl2="$root/templates/p10k_mysetup.zsh"
+  if [ -f "$tpl1" ]; then
+    cp "$tpl1" "$HOME/.p10k.zsh"
+    ok "Applied repo p10k config from configuration/.p10k.zsh"
+  elif [ -f "$tpl2" ]; then
+    cp "$tpl2" "$HOME/.p10k.zsh"
+    ok "Applied repo p10k config from templates/p10k_mysetup.zsh"
+  fi
+
   # Source optional ~/.p10k.zsh if present
   _sr_append_once "$rc" '[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh'
   ok "powerlevel10k wired into $(basename "$rc")"
@@ -105,13 +125,17 @@ _sr_setup_p10k() {
 
 # Post-install shell wiring for tools that need it
 _sr_post_install_integration() {
-  local tool="$1"
-  local rc; rc="$(_sr_rc_file)"
+  local tool rc
+  tool="$1"
+  rc="$(_sr_rc_file)"
 
   case "$tool" in
     thefuck)
       _sr_append_once "$rc" 'eval $(thefuck --alias)'
+      # make it work immediately
+      eval "$(thefuck --alias)" || true
       ok "thefuck alias added to $(basename "$rc")"
+      printf "💡 Tip: run a failing command, then type 'fuck' to fix and re-run.\n"
       ;;
     zoxide)
       if [ -n "${ZSH_VERSION:-}" ] || [ -f "$HOME/.zshrc" ]; then
@@ -391,8 +415,6 @@ sr_install_tool() {
     local tap; tap="$(_sr_installed_tap kubectx)"
     sr_log_json "$domain" "$tool" "$level" "installed"
     ok "kubectx (already installed${tap:+ via $tap})"
-    # still run integration for p10k-related plugins if user maps it that way
-    :
     return 0
   fi
   if [ "$tool" = "kubens" ] && have kubens; then
