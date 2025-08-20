@@ -48,21 +48,63 @@ _sr_domain_json() {
   esac
 }
 
+# --- width-aware padding (rough but effective with emoji) ---
+# Count "visible width": ASCII =1, non-ASCII (incl. emoji) =2
+_visible_width() {
+  # strip ANSI first
+  local s; s="$(printf '%s' "$1" | sed -E 's/\x1B\[[0-9;]*[A-Za-z]//g')"
+  awk -v str="$s" '
+    BEGIN{
+      n = split(str, a, "")
+      w = 0
+      for (i=1; i<=n; i++) {
+        c = a[i]
+        if (ord(c) > 127) w += 2; else w += 1
+      }
+      print w
+    }
+    function ord(ch,   cmd, r) {
+      cmd = "printf \"%d\" \'" ch "\'"
+      cmd | getline r
+      close(cmd)
+      return r
+    }
+  '
+}
+
+_pad_cell() {
+  # _pad_cell "text" 28  -> text padded with spaces to ~28 display cells
+  local text="$1" target="$2"
+  local w; w="$(_visible_width "$text")"
+  local pad=$(( target - w ))
+  if [ "$pad" -lt 1 ]; then
+    printf "%s" "$text"
+  else
+    printf "%s%*s" "$text" "$pad" ""
+  fi
+}
+
 # Calculate domain status by checking if all MUST tools are installed in state
 _sr_domain_status_line() {
   local idx="$1"
   local title="$(_sr_domain_title "$idx")"
   local json="$(_sr_domain_json "$idx")"
+  local left right status_phrase
+  local TITLE_COLS=28
 
   # Bonus tools: just show as available (no status math)
   if [ "$idx" = "11" ]; then
-    printf "%2s: %-28s  %s\n" "$idx" "$title" "🧩 Available"
+    left="$(printf "%2s: " "$idx")"
+    right="  🧩 Available"
+    printf "%s%s%s\n" "$left" "$(_pad_cell "$title" "$TITLE_COLS")" "$right"
     return
   fi
 
   # No jq / no state / no json -> neutral pending
   if ! have jq || [ ! -f "$SR_VERSION_STATE" ] || [ ! -s "$SR_VERSION_STATE" ] || [ ! -f "$json" ]; then
-    printf "%2s: %-28s  %s\n" "$idx" "$title" "🕒 Pending"
+    left="$(printf "%2s: " "$idx")"
+    right="  🕒 Pending"
+    printf "%s%s%s\n" "$left" "$(_pad_cell "$title" "$TITLE_COLS")" "$right"
     return
   fi
 
@@ -70,8 +112,9 @@ _sr_domain_status_line() {
   local tools
   tools="$(jq -r '.tools.must[]?' "$json" 2>/dev/null || true)"
   if [ -z "$tools" ]; then
-    # no must tools? call it pending but harmless
-    printf "%2s: %-28s  %s\n" "$idx" "$title" "🕒 Pending"
+    left="$(printf "%2s: " "$idx")"
+    right="  🕒 Pending"
+    printf "%s%s%s\n" "$left" "$(_pad_cell "$title" "$TITLE_COLS")" "$right"
     return
   fi
 
@@ -80,17 +123,20 @@ _sr_domain_status_line() {
   while IFS= read -r t; do
     [ -n "$t" ] || continue
     total=$((total+1))
-    # state: .[t].installed == true
     if jq -e --arg tool "$t" '.[ $tool ].installed == true' "$SR_VERSION_STATE" >/dev/null 2>&1; then
       okc=$((okc+1))
     fi
   done <<< "$tools"
 
   if [ "$total" -gt 0 ] && [ "$okc" -eq "$total" ]; then
-    printf "%2s: %-28s  %s %d/%d\n" "$idx" "$title" "✅ Complete" "$okc" "$total"
+    status_phrase="✅ Complete"
   else
-    printf "%2s: %-28s  %s %d/%d\n" "$idx" "$title" "🕒 Pending" "$okc" "$total"
+    status_phrase="🕒 Pending"
   fi
+
+  left="$(printf "%2s: " "$idx")"
+  right="$(printf "  %s %d/%d" "$status_phrase" "$okc" "$total")"
+  printf "%s%s%s\n" "$left" "$(_pad_cell "$title" "$TITLE_COLS")" "$right"
 }
 
 # Build the menu lines with live status
@@ -139,17 +185,16 @@ sr_menu_main() {
   local picked="" ans=""
   if have gum; then
     say "Use ↑/↓ then Enter, or press [1–11/A/Q] for quick select…"
-    # read a single key w/out echo from the TTY; if it's not a shortcut, open chooser
     IFS= read -r -n1 -s ans </dev/tty || ans=""
     case "$ans" in
       [1-9])
         picked="$(_sr_map_quick_choice "$ans")"
         ;;
-      1)  picked="1" ;; 2) picked="2" ;; 3) picked="3" ;; # (kept for clarity)
+      1)  picked="1" ;; 2) picked="2" ;; 3) picked="3" ;;
       A|a|Q|q)
         picked="$(_sr_map_quick_choice "$ans")"
         ;;
-      0)  # could be start of 10/11; read one more char quickly
+      0)
         IFS= read -r -n1 -s ans2 </dev/tty || ans2=""
         case "${ans}${ans2}" in
           10) picked="10" ;;
@@ -158,7 +203,6 @@ sr_menu_main() {
         esac
         ;;
       *)
-        # open the chooser — arrows fully supported
         picked="$(printf '%s\n' "${items[@]}" \
           | gum choose --header 'Select a domain or action (↑/↓, Enter)')" || picked=""
         ;;
@@ -167,25 +211,22 @@ sr_menu_main() {
     picked="$(printf '%s\n' "${items[@]}" \
       | fzf --prompt='Select > ' --height=80% --border)" || picked=""
   else
-    # Plain input fallback
     say "Type 1–11 / A / Q and press Enter:"
     IFS= read -r ans || ans=""
     ans="$(_trim "$ans")"
     picked="$(_sr_map_quick_choice "$ans")"
   fi
 
-  # If we got a full line from gum/fzf (e.g., "  1: Terminal & UX  ✅ 7/7"), reduce to token
+  # Reduce gum/fzf full-line selection to token if needed
   if [ -n "$picked" ] && [[ "$picked" != [0-9AQaq]* ]]; then
     picked="$(printf '%s' "$picked" | _strip_ansi | tr -d '\r')"
     picked="$(_trim "$picked")"
-    # Extract the leading code (before ':' or space)
     case "$picked" in
       [0-9]*:*) picked="${picked%%:*}";;
       "A:"*)    picked="A";;
       "Q:"*)    picked="Q";;
-      "A"|"Q")  ;; # already good
+      "A"|"Q")  ;;
       *)
-        # Line like "11: 🌟 Bonus Tools  🧩 Available"
         if [[ "$picked" =~ ^([0-9]+) ]]; then
           picked="${BASH_REMATCH[1]}"
         fi

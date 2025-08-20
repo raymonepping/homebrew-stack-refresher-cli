@@ -425,3 +425,6 @@
 {"ts":"2025-08-20T14:45:58+02:00","domain":"Terminal & UX","tool":"eza","level":"must","status":"installed"}
 {"ts":"2025-08-20T14:45:58+02:00","domain":"Terminal & UX","tool":"fzf","level":"must","status":"installed"}
 {"ts":"2025-08-20T14:46:03+02:00","domain":"Terminal & UX","tool":"powerlevel10k","level":"must","status":"installed"}
+{"ts":"2025-08-20T14:47:02+02:00","domain":"Containers & Runtimes","tool":"colima","level":"must","status":"installed"}
+{"ts":"2025-08-20T14:47:08+02:00","domain":"Containers & Runtimes","tool":"compose","level":"must","status":"installed"}
+{"ts":"2025-08-20T14:47:08+02:00","domain":"Containers & Runtimes","tool":"nomad","level":"must","status":"installed"}
