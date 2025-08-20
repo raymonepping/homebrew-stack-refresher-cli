@@ -129,27 +129,32 @@ sr_version_state_write() {
 sr_brew_installed_version() {
   local name="$1"
   command -v brew >/dev/null 2>&1 || return 0
-  command -v jq >/dev/null 2>&1 || return 0
+  command -v jq   >/dev/null 2>&1 || return 0
+  # Do not exit on brew/jq failure under pipefail
   brew info --json=v2 "$name" 2>/dev/null \
-    | jq -r '.formulae[0].installed[0].version // empty'
+    | jq -r '.formulae[0].installed[0].version // empty' \
+    || true
 }
 
 # Best-effort: get latest stable version known to brew
 sr_brew_latest_stable_version() {
   local name="$1"
   command -v brew >/dev/null 2>&1 || return 0
-  command -v jq >/dev/null 2>&1 || return 0
+  command -v jq   >/dev/null 2>&1 || return 0
   brew info --json=v2 "$name" 2>/dev/null \
-    | jq -r '.formulae[0].versions.stable // empty'
+    | jq -r '.formulae[0].versions.stable // empty' \
+    || true
 }
 
 # Fallback: try "<cmd> --version" and scrape a semver looking string.
 sr_cmd_version() {
   local cmd="$1"
   command -v "$cmd" >/dev/null 2>&1 || return 0
+  # Don’t let a “no match” kill the script under pipefail
   "$cmd" --version 2>&1 \
     | grep -Eo '[0-9]+(\.[0-9]+){1,3}' \
-    | head -n1
+    | head -n1 \
+    || true
 }
 
 # Compare two versions using sort -V.
