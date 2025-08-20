@@ -384,3 +384,11 @@ sr_brew_maybe_upgrade() {
     *) : ;;
   esac
 }
+
+# helpers.sh
+timer_end_say() {
+  local key="${1:-default}"
+  while IFS= read -r line; do
+    say "$line"
+  done < <(timer_end "$key")
+}

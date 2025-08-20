@@ -3,7 +3,7 @@
     "installed": true,
     "version": "5.9",
     "source": "brew",
-    "last_checked": "2025-08-20T13:29:36Z",
+    "last_checked": "2025-08-20T13:50:21Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -11,8 +11,8 @@
   "tmux": {
     "installed": true,
     "version": "3.5a",
-    "source": "brew",
-    "last_checked": "2025-08-20T13:29:38Z",
+    "source": "path",
+    "last_checked": "2025-08-20T13:50:22Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -21,7 +21,7 @@
     "installed": true,
     "version": "0.25.0",
     "source": "path",
-    "last_checked": "2025-08-20T13:29:39Z",
+    "last_checked": "2025-08-20T13:50:22Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -30,7 +30,7 @@
     "installed": true,
     "version": "14.1.1",
     "source": "path",
-    "last_checked": "2025-08-20T13:29:44Z",
+    "last_checked": "2025-08-20T13:50:27Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -39,7 +39,7 @@
     "installed": true,
     "version": "0.23.0",
     "source": "path",
-    "last_checked": "2025-08-20T13:29:44Z",
+    "last_checked": "2025-08-20T13:50:27Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -48,7 +48,7 @@
     "installed": true,
     "version": "0.65.1",
     "source": "path",
-    "last_checked": "2025-08-20T13:29:45Z",
+    "last_checked": "2025-08-20T13:50:27Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -57,7 +57,7 @@
     "installed": true,
     "version": "1.20.0",
     "source": "path",
-    "last_checked": "2025-08-20T13:29:51Z",
+    "last_checked": "2025-08-20T13:50:34Z",
     "domains": [
       "Terminal & UX"
     ]

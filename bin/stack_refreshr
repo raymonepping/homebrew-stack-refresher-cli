@@ -68,6 +68,15 @@ mkdir -p "$SR_LOGS" "$SR_STATE"
 . "$SR_LIB/helpers.sh"
 . "$SR_LIB/domain_loader.sh"
 . "$SR_LIB/aliases.sh"
+. "$SR_LIB/timer.sh"
+
+timer_start "all_must"
+"$SR_ROOT/scripts/domain_01_terminal.sh"
+"$SR_ROOT/scripts/domain_02_ssh.sh"
+# …etc…
+while IFS= read -r line; do
+  say "$line"
+done < <(timer_end "all_must")
 
 [ "$SET_ALIASES" = "1" ] && sr_apply_aliases
 

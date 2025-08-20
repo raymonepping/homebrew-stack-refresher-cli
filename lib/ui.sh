@@ -15,6 +15,9 @@ _strip_ansi(){ sed -E 's/\x1B\[[0-9;]*[A-Za-z]//g'; }
 : "${SR_STATE:="$SR_ROOT/state"}"
 : "${SR_VERSION_STATE:="$SR_STATE/.base.version.state.json"}"
 
+# After the SR_* vars:
+[ -f "$SR_ROOT/lib/polish.sh" ] && . "$SR_ROOT/lib/polish.sh" || SR_POLISH=0
+
 # Icons (emoji) and plain ASCII labels per domain
 _sr_domain_icon() {
   case "$1" in
@@ -228,7 +231,11 @@ _sr_map_quick_choice() {
 # Main menu: returns 1..11 / A / Q on STDOUT
 sr_menu_main() {
   hr
-  say "🧭 stack_refreshr — Main Menu"
+  if [ "${SR_POLISH:-0}" -eq 1 ]; then
+    polish_banner "stack_refreshr  —  Main Menu" >&2
+  else
+    say "🧭 stack_refreshr — Main Menu"
+  fi
   hr
 
   # Build items with live status
