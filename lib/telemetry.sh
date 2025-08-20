@@ -7,9 +7,12 @@ set -euo pipefail
 # - say() should exist (from your helpers/ui)
 
 # Default config path
+: "${TELEM_ENABLED:=0}"
+: "${TELEM_DRY_RUN:=0}"
 : "${SR_CFG_DIR:="$HOME/.config/stack_refreshr"}"
 : "${SR_TELEM_CFG:="$SR_CFG_DIR/telemetry.json"}"
 : "${SR_LOGS:="${SR_LOGS:-$SR_ROOT/logs}"}"
+: "${TELEM_VERBOSE:=${VERBOSE:-0}}"
 mkdir -p "$SR_CFG_DIR" "$SR_LOGS"
 
 have(){ command -v "$1" >/dev/null 2>&1; }
@@ -38,6 +41,16 @@ telemetry_load_cfg() {
 
   export TELEM_ENABLED TELEM_UPLOAD_URL TELEM_GIST_ID TELEM_DRY_RUN TELEM_FIELDS
 }
+
+telemetry_cfg_enabled() {
+  [ -s "$SR_TELEM_CFG" ] && jq -r '.enabled // false' "$SR_TELEM_CFG" 2>/dev/null | grep -qi true
+}
+
+telemetry_enabled() {
+  # Enabled if flag OR config says so.
+  [ "${TELEM_ENABLED:-0}" = "1" ] || telemetry_cfg_enabled
+}
+
 
 # --- token discovery (never hard-code) ---
 telemetry_token() {
@@ -143,6 +156,7 @@ telemetry_append_to_gist() {
       say "⚠️ gh PATCH failed; falling back to curl/local."
       content=""  # force curl path
     }
+    [ "${TELEM_VERBOSE}" = "1" ] && say "📡 Telemetry: appended to gist ${TELEM_GIST_ID} ($(telemetry_filename_for_today))"
     [ -n "$content" ] && return 0
   fi
 

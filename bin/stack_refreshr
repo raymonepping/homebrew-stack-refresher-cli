@@ -19,6 +19,8 @@ export HOMEBREW_NO_AUTO_UPDATE=1
 export HOMEBREW_NO_INSTALL_CLEANUP=1
 export HOMEBREW_NO_ENV_HINTS=1
 
+export TELEM_ENABLED TELEM_DRY_RUN
+
 # Auto-load domain files
 for f in "$SR_LIB"/domain_*.sh; do [ -r "$f" ] && . "$f"; done
 
@@ -103,7 +105,7 @@ mkdir -p "$SR_LOGS" "$SR_STATE"
 . "$SR_LIB/domain_loader.sh"
 . "$SR_LIB/aliases.sh"
 . "$SR_LIB/timer.sh"
-. "$SR_LIB/telemetry.sh"   # <-- IMPORTANT: make telemetry available in menu/flows
+. "$SR_LIB/telemetry.sh"
 
 [ "$SET_ALIASES" = "1" ] && sr_apply_aliases
 
@@ -132,43 +134,52 @@ sr_domain_slug() {
 }
 
 # Run a domain by numeric key, with mode (full|must), with timer + telemetry
+# Run a domain by numeric key, with a given mode (default: full)
 sr_run_domain() {
   local num="$1"; shift || true
   local mode="${1:-full}"
   local fn="${domain_map[$num]:-}"
+
   if [ -z "$fn" ]; then
     warn "No domain mapped for: $num"
     return 1
   fi
 
-  local key="$fn"   # timer key == function name makes logs readable
-  timer_start "$key"
+  # measure duration (independent of pretty timer output)
+  local _start _end _dur
+  _start=$(date +%s)
 
-  # Run the domain
-  local status_txt="completed"
-  if ! sr_run_or_warn "$fn" "$mode"; then
-    status_txt="error"
+  # pretty timer + error-safe run
+  timer_wrap "$fn" sr_run_or_warn "$fn" "$mode"
+
+  _end=$(date +%s)
+  _dur=$((_end - _start))
+
+  # Telemetry (opt-in) — domain name is the function name, status "complete"
+  # Include mode for context (full/must/etc)
+  if telemetry_enabled; then
+    telemetry_send_event "$fn" "complete" "$_dur" "" "{\"mode\":\"$mode\"}"
   fi
-
-  # Duration (in seconds) BEFORE we end the timer (we still print pretty info)
-  local dur_sec; dur_sec="$(timer_elapsed_sec "$key")"
-
-  # Print the pretty timer lines to the UI
-  timer_end_say "$key"
-
-  # Send telemetry (respects config + --enable-telemetry)
-  telemetry_send_event "$(sr_domain_slug "$num")" "$status_txt" "$dur_sec" "" \
-    "$(printf '{"mode":"%s"}' "$mode")"
 }
 
 # ALL MUST using same map/order
 sr_install_all_must() {
   say "🚀 Installing ALL MUST tools across domains…"
+  local _start _end _dur
+  _start=$(date +%s)
+
   timer_start "all_must"
   for i in "${domain_order[@]}"; do
     sr_run_domain "$i" "must"
   done
   timer_end_say "all_must"
+
+  _end=$(date +%s)
+  _dur=$((_end - _start))
+
+  if telemetry_enabled; then
+    telemetry_send_event "all_must" "complete" "$_dur" "" '{"mode":"must"}'
+  fi
 }
 
 # Run

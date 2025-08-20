@@ -3,7 +3,7 @@
     "installed": true,
     "version": "5.9",
     "source": "brew",
-    "last_checked": "2025-08-20T15:12:12Z",
+    "last_checked": "2025-08-20T15:35:34Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -11,8 +11,8 @@
   "tmux": {
     "installed": true,
     "version": "3.5a",
-    "source": "path",
-    "last_checked": "2025-08-20T15:12:12Z",
+    "source": "brew",
+    "last_checked": "2025-08-20T15:35:36Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -21,7 +21,7 @@
     "installed": true,
     "version": "0.25.0",
     "source": "path",
-    "last_checked": "2025-08-20T15:12:13Z",
+    "last_checked": "2025-08-20T15:35:36Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -29,8 +29,8 @@
   "ripgrep": {
     "installed": true,
     "version": "14.1.1",
-    "source": "brew",
-    "last_checked": "2025-08-20T15:12:19Z",
+    "source": "path",
+    "last_checked": "2025-08-20T15:35:41Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -39,7 +39,7 @@
     "installed": true,
     "version": "0.23.0",
     "source": "path",
-    "last_checked": "2025-08-20T15:12:19Z",
+    "last_checked": "2025-08-20T15:35:41Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -48,7 +48,7 @@
     "installed": true,
     "version": "0.65.1",
     "source": "path",
-    "last_checked": "2025-08-20T15:12:19Z",
+    "last_checked": "2025-08-20T15:35:41Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -57,7 +57,7 @@
     "installed": true,
     "version": "1.20.0",
     "source": "path",
-    "last_checked": "2025-08-20T15:12:25Z",
+    "last_checked": "2025-08-20T15:35:47Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -66,7 +66,7 @@
     "installed": true,
     "version": "9.9p2",
     "source": "path",
-    "last_checked": "2025-08-20T15:07:38Z",
+    "last_checked": "2025-08-20T15:36:03Z",
     "domains": [
       "SSH & Key Management"
     ]
@@ -75,7 +75,7 @@
     "installed": true,
     "version": "2.39.5",
     "source": "path",
-    "last_checked": "2025-08-20T11:32:42Z",
+    "last_checked": "2025-08-20T16:23:28Z",
     "domains": [
       "Git & Source Control"
     ]
@@ -84,7 +84,7 @@
     "installed": true,
     "version": "2.76.1",
     "source": "path",
-    "last_checked": "2025-08-20T11:32:42Z",
+    "last_checked": "2025-08-20T16:23:28Z",
     "domains": [
       "Git & Source Control"
     ]
@@ -93,7 +93,7 @@
     "installed": true,
     "version": "4.3.0",
     "source": "path",
-    "last_checked": "2025-08-20T11:32:42Z",
+    "last_checked": "2025-08-20T16:23:29Z",
     "domains": [
       "Git & Source Control"
     ]
@@ -101,8 +101,8 @@
   "thefuck": {
     "installed": true,
     "version": "3.32",
-    "source": "brew",
-    "last_checked": "2025-08-20T11:29:29Z",
+    "source": "path",
+    "last_checked": "2025-08-20T15:22:28Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -111,7 +111,7 @@
     "installed": true,
     "version": "1.6.1",
     "source": "path",
-    "last_checked": "2025-08-20T10:29:19Z",
+    "last_checked": "2025-08-20T15:22:28Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -120,7 +120,7 @@
     "installed": true,
     "version": "0.16.2",
     "source": "path",
-    "last_checked": "2025-08-20T11:29:38Z",
+    "last_checked": "2025-08-20T15:22:54Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -129,7 +129,7 @@
     "installed": true,
     "version": "100.0.1",
     "source": "path",
-    "last_checked": "2025-08-20T10:29:32Z",
+    "last_checked": "2025-08-20T15:23:01Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -138,7 +138,7 @@
     "installed": true,
     "version": "1.2.3",
     "source": "path",
-    "last_checked": "2025-08-20T10:29:32Z",
+    "last_checked": "2025-08-20T15:23:02Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -165,7 +165,7 @@
     "installed": true,
     "version": "0.18.2",
     "source": "path",
-    "last_checked": "2025-08-20T11:32:42Z",
+    "last_checked": "2025-08-20T16:23:29Z",
     "domains": [
       "Git & Source Control"
     ]
@@ -174,7 +174,7 @@
     "installed": true,
     "version": "1.42.3",
     "source": "path",
-    "last_checked": "2025-08-20T11:32:52Z",
+    "last_checked": "2025-08-20T16:23:32Z",
     "domains": [
       "Code & Dev Tools"
     ]
@@ -183,7 +183,7 @@
     "installed": true,
     "version": "2.37.1",
     "source": "path",
-    "last_checked": "2025-08-20T11:32:52Z",
+    "last_checked": "2025-08-20T16:23:33Z",
     "domains": [
       "Code & Dev Tools"
     ]
@@ -192,7 +192,7 @@
     "installed": true,
     "version": "0.10.0",
     "source": "path",
-    "last_checked": "2025-08-20T11:32:52Z",
+    "last_checked": "2025-08-20T16:23:33Z",
     "domains": [
       "Code & Dev Tools"
     ]
@@ -201,7 +201,7 @@
     "installed": true,
     "version": "0.8.4",
     "source": "path",
-    "last_checked": "2025-08-20T14:32:35Z",
+    "last_checked": "2025-08-20T16:23:37Z",
     "domains": [
       "Containers & Runtimes"
     ]
@@ -210,7 +210,7 @@
     "installed": true,
     "version": "2.39.2",
     "source": "path",
-    "last_checked": "2025-08-20T14:32:40Z",
+    "last_checked": "2025-08-20T16:23:42Z",
     "domains": [
       "Containers & Runtimes"
     ]
@@ -219,7 +219,7 @@
     "installed": true,
     "version": "1.10.3",
     "source": "path",
-    "last_checked": "2025-08-20T14:32:41Z",
+    "last_checked": "2025-08-20T16:23:43Z",
     "domains": [
       "Containers & Runtimes"
     ]
@@ -228,7 +228,7 @@
     "installed": true,
     "version": "1.33.4",
     "source": "path",
-    "last_checked": "2025-08-20T11:32:58Z",
+    "last_checked": "2025-08-20T16:26:07Z",
     "domains": [
       "Kubernetes (Local Dev)"
     ]
@@ -237,7 +237,7 @@
     "installed": true,
     "version": "3.18.5",
     "source": "path",
-    "last_checked": "2025-08-20T11:32:58Z",
+    "last_checked": "2025-08-20T16:26:07Z",
     "domains": [
       "Kubernetes (Local Dev)"
     ]
@@ -246,7 +246,7 @@
     "installed": true,
     "version": "1.19.5",
     "source": "path",
-    "last_checked": "2025-08-20T11:32:59Z",
+    "last_checked": "2025-08-20T16:26:10Z",
     "domains": [
       "Secrets & Certs"
     ]
@@ -254,8 +254,8 @@
   "sops": {
     "installed": true,
     "version": "3.10.2",
-    "source": "path",
-    "last_checked": "2025-08-20T11:32:59Z",
+    "source": "brew",
+    "last_checked": "2025-08-20T16:26:12Z",
     "domains": [
       "Secrets & Certs"
     ]
@@ -264,7 +264,7 @@
     "installed": true,
     "version": "1.8.1",
     "source": "path",
-    "last_checked": "2025-08-20T11:32:59Z",
+    "last_checked": "2025-08-20T16:26:14Z",
     "domains": [
       "Observability & Logs"
     ]
@@ -273,7 +273,7 @@
     "installed": true,
     "version": "0.11.1",
     "source": "path",
-    "last_checked": "2025-08-20T11:33:04Z",
+    "last_checked": "2025-08-20T16:26:18Z",
     "domains": [
       "Observability & Logs"
     ]
@@ -282,7 +282,7 @@
     "installed": true,
     "version": "0.13.0",
     "source": "path",
-    "last_checked": "2025-08-20T11:33:04Z",
+    "last_checked": "2025-08-20T16:26:19Z",
     "domains": [
       "Observability & Logs"
     ]
@@ -291,7 +291,7 @@
     "installed": true,
     "version": "1.12.2",
     "source": "path",
-    "last_checked": "2025-08-20T11:33:05Z",
+    "last_checked": "2025-08-20T16:26:21Z",
     "domains": [
       "Infrastructure as Code"
     ]
@@ -299,8 +299,8 @@
   "tflint": {
     "installed": true,
     "version": "0.58.1",
-    "source": "brew",
-    "last_checked": "2025-08-20T11:33:06Z",
+    "source": "path",
+    "last_checked": "2025-08-20T16:26:21Z",
     "domains": [
       "Infrastructure as Code"
     ]
@@ -309,7 +309,7 @@
     "installed": true,
     "version": "1.12.0",
     "source": "path",
-    "last_checked": "2025-08-20T11:33:07Z",
+    "last_checked": "2025-08-20T16:26:22Z",
     "domains": [
       "Infrastructure as Code"
     ]
@@ -318,7 +318,7 @@
     "installed": true,
     "version": "20250722",
     "source": "path",
-    "last_checked": "2025-08-20T11:33:07Z",
+    "last_checked": "2025-08-20T16:26:24Z",
     "domains": [
       "Automation & Scheduling"
     ]
@@ -326,8 +326,8 @@
   "watchexec": {
     "installed": true,
     "version": "2.3.2",
-    "source": "path",
-    "last_checked": "2025-08-20T11:33:07Z",
+    "source": "brew",
+    "last_checked": "2025-08-20T16:26:25Z",
     "domains": [
       "Automation & Scheduling"
     ]
@@ -336,7 +336,7 @@
     "installed": true,
     "version": "5.7",
     "source": "path",
-    "last_checked": "2025-08-20T11:33:07Z",
+    "last_checked": "2025-08-20T16:26:25Z",
     "domains": [
       "Automation & Scheduling"
     ]
@@ -366,6 +366,69 @@
     "last_checked": "2025-08-20T12:33:45Z",
     "domains": [
       "SSH & Key Management"
+    ]
+  },
+  "fd": {
+    "installed": true,
+    "version": "10.2.0",
+    "source": "path",
+    "last_checked": "2025-08-20T15:22:25Z",
+    "domains": [
+      "Terminal & UX"
+    ]
+  },
+  "zoxide": {
+    "installed": true,
+    "version": "0.9.8",
+    "source": "brew",
+    "last_checked": "2025-08-20T15:22:27Z",
+    "domains": [
+      "Terminal & UX"
+    ]
+  },
+  "atuin": {
+    "installed": true,
+    "version": "18.8.0",
+    "source": "path",
+    "last_checked": "2025-08-20T15:22:28Z",
+    "domains": [
+      "Terminal & UX"
+    ]
+  },
+  "warp": {
+    "installed": true,
+    "version": "0.2025.08.13.08.12.stable_02",
+    "source": "brew",
+    "last_checked": "2025-08-20T15:22:53Z",
+    "domains": [
+      "Terminal & UX"
+    ]
+  },
+  "figlet": {
+    "installed": true,
+    "version": "",
+    "source": "path",
+    "last_checked": "2025-08-20T15:23:01Z",
+    "domains": [
+      "Terminal & UX"
+    ]
+  },
+  "procs": {
+    "installed": true,
+    "version": "0.14.10",
+    "source": "path",
+    "last_checked": "2025-08-20T15:23:09Z",
+    "domains": [
+      "Terminal & UX"
+    ]
+  },
+  "starship": {
+    "installed": true,
+    "version": "1.23.0",
+    "source": "path",
+    "last_checked": "2025-08-20T15:23:16Z",
+    "domains": [
+      "Terminal & UX"
     ]
   }
 }
