@@ -150,13 +150,53 @@ sr_brew_latest_stable_version() {
     || true
 }
 
+# Tool-aware version detection (tries best flag per tool, falls back to generic)
 sr_cmd_version() {
   local cmd="$1"
   command -v "$cmd" >/dev/null 2>&1 || return 0
+
+  case "$cmd" in
+    kubectl)
+      # kubectl version --client --short → "Client Version: v1.xx.y"
+      kubectl version --client --short 2>/dev/null \
+        | grep -Eo 'v[0-9]+(\.[0-9]+){1,2}' \
+        | head -n1 || true
+      return 0
+      ;;
+    helm)
+      # helm version --short → "v3.xx.y+g<hash>"
+      helm version --short 2>/dev/null \
+        | grep -Eo 'v[0-9]+(\.[0-9]+){1,2}' \
+        | head -n1 || true
+      return 0
+      ;;
+    tmux)
+      # tmux -V → "tmux 3.5a"
+      tmux -V 2>/dev/null \
+        | grep -Eo '[0-9]+(\.[0-9]+){1,2}[a-z]?' \
+        | head -n1 || true
+      return 0
+      ;;
+    parallel)
+      # GNU parallel --version → first line has version
+      parallel --version 2>/dev/null \
+        | head -n1 \
+        | grep -Eo '[0-9]+(\.[0-9]+){1,2}' \
+        | head -n1 || true
+      return 0
+      ;;
+    jq)
+      jq --version 2>/dev/null \
+        | grep -Eo '[0-9]+(\.[0-9]+){1,2}' \
+        | head -n1 || true
+      return 0
+      ;;
+  esac
+
+  # Generic path
   "$cmd" --version 2>&1 \
     | grep -Eo '[0-9]+(\.[0-9]+){1,3}' \
-    | head -n1 \
-    || true
+    | head -n1 || true
 }
 
 # Compare two versions using sort -V.
@@ -189,18 +229,21 @@ sr_detect_source() {
 }
 
 # Binary name candidates for tools whose CLI != formula name (or meta tools)
+# Return space-separated list.
 sr_binary_candidates() {
   case "$1" in
-    ripgrep) echo "ripgrep rg" ;;
+    ripgrep) echo "rg ripgrep" ;;             # prefer rg binary
     rg)      echo "rg ripgrep" ;;
     git-delta|delta) echo "delta" ;;
     docker-compose|compose) echo "docker-compose 'docker compose'" ;;
     gh-key-upload|gh) echo "gh" ;;
-    openssh) echo "ssh scp sftp ssh-add" ;;
+    openssh) echo "ssh scp sftp ssh-add" ;;   # any implies openssh present
     "1password-cli"|op) echo "op" ;;
-    powerlevel10k) echo "" ;;     # meta theme
+    powerlevel10k) echo "" ;;                 # meta theme; handled specially
     kubectx) echo "kubectx" ;;
     kubens)  echo "kubens" ;;
+    bottom)  echo "btm bottom" ;;             # bottom’s binary is usually `btm`
+    btm)     echo "btm bottom" ;;
     *) echo "$1" ;;
   esac
 }
@@ -210,6 +253,7 @@ sr_any_cmd_exists() {
   local cand
   for cand in "$@"; do
     [ -z "$cand" ] && continue
+    # support a two-word candidate like "docker compose"
     if [[ "$cand" == *" "* ]]; then
       local first="${cand%% *}" second="${cand#* }"
       command -v "$first" >/dev/null 2>&1 && "$first" "$second" --help >/dev/null 2>&1 && return 0
@@ -242,6 +286,7 @@ sr_record_tool_version() {
     return 0
   fi
   if [ "$tool" = "openssh" ]; then
+    # treat openssh installed if brew has formula OR ssh exists
     if [ "$source" = "brew" ] || sr_any_cmd_exists ssh; then
       installed=true
       version="$(sr_brew_installed_version "$brew_name")"
@@ -258,9 +303,11 @@ sr_record_tool_version() {
 
   if sr_any_cmd_exists "${cands[@]}"; then
     installed=true
+    # Prefer brew version if brew says it's there
     if [ "$source" = "brew" ] && [ -n "$brew_name" ]; then
       version="$(sr_brew_installed_version "$brew_name")"
     fi
+    # If no brew version, try first viable candidate with tool-aware scraper
     if [ -z "$version" ]; then
       for cand in "${cands[@]}"; do
         [[ "$cand" == *" "* ]] && continue
