@@ -1,0 +1,68 @@
+{
+  "zsh": {
+    "installed": true,
+    "version": "5.9",
+    "source": "brew",
+    "last_checked": "2025-08-20T09:57:09Z"
+  },
+  "tmux": {
+    "installed": true,
+    "version": "3.5a",
+    "source": "brew",
+    "last_checked": "2025-08-20T09:57:10Z"
+  },
+  "bat": {
+    "installed": true,
+    "version": "0.25.0",
+    "source": "path",
+    "last_checked": "2025-08-20T09:57:11Z"
+  },
+  "ripgrep": {
+    "installed": false,
+    "version": "",
+    "source": "path",
+    "last_checked": "2025-08-20T09:57:15Z"
+  },
+  "eza": {
+    "installed": true,
+    "version": "0.23.0",
+    "source": "path",
+    "last_checked": "2025-08-20T09:57:15Z"
+  },
+  "fzf": {
+    "installed": true,
+    "version": "0.65.1",
+    "source": "path",
+    "last_checked": "2025-08-20T09:57:16Z"
+  },
+  "powerlevel10k": {
+    "installed": false,
+    "version": "",
+    "source": "path",
+    "last_checked": "2025-08-20T09:57:21Z"
+  },
+  "openssh": {
+    "installed": false,
+    "version": "",
+    "source": "brew",
+    "last_checked": "2025-08-20T09:57:36Z"
+  },
+  "git": {
+    "installed": true,
+    "version": "2.39.5",
+    "source": "path",
+    "last_checked": "2025-08-20T09:57:36Z"
+  },
+  "gh": {
+    "installed": true,
+    "version": "2.76.1",
+    "source": "path",
+    "last_checked": "2025-08-20T09:57:37Z"
+  },
+  "pre-commit": {
+    "installed": true,
+    "version": "4.3.0",
+    "source": "path",
+    "last_checked": "2025-08-20T09:57:45Z"
+  }
+}

@@ -409,12 +409,16 @@ _sr_brew_has_pkg() {
 sr_install_tool() {
   local domain="$1" tool="$2" level="$3"
   read -r brew_name brew_type < <(sr_tool_brew_tuple "$tool")
+  # Normalize brew_name for state purposes when empty
+  if [ -z "${brew_name:-}" ]; then brew_name="$tool"; fi
 
   # Friendly messages for kubectx/kubens already present
   if [ "$tool" = "kubectx" ] && have kubectx; then
     local tap; tap="$(_sr_installed_tap kubectx)"
     sr_log_json "$domain" "$tool" "$level" "installed"
     ok "kubectx (already installed${tap:+ via $tap})"
+    # record version/state
+    sr_record_tool_version "$tool" "$brew_name" "$brew_type"
     return 0
   fi
   if [ "$tool" = "kubens" ] && have kubens; then
@@ -422,10 +426,12 @@ sr_install_tool() {
       local tap; tap="$(_sr_installed_tap kubectx)"
       sr_log_json "$domain" "$tool" "$level" "installed"
       ok "kubens (already installed via ${tap:-homebrew/core}, provided by kubectx)"
+      sr_record_tool_version "$tool" "$brew_name" "$brew_type"
       return 0
     fi
     sr_log_json "$domain" "$tool" "$level" "installed"
     ok "kubens (already installed)"
+    sr_record_tool_version "$tool" "$brew_name" "$brew_type"
     return 0
   fi
 
@@ -438,6 +444,8 @@ sr_install_tool() {
         _sr_post_install_integration "$tool"
         ;;
     esac
+    # record version/state
+    sr_record_tool_version "$tool" "$brew_name" "$brew_type"
     return 0
   fi
 
@@ -454,6 +462,10 @@ sr_install_tool() {
           sr_log_json "$domain" "$tool" "$level" "failed"
           return 1
         fi
+        # Optionally upgrade if outdated (only meaningful for formulas)
+        if [ "$brew_type" != "cask" ]; then
+          sr_brew_maybe_upgrade "$brew_name"
+        fi
       else
         warn "brew not found; skipping install of $tool (mock)"
       fi
@@ -469,6 +481,9 @@ sr_install_tool() {
       _sr_post_install_integration "$tool"
       ;;
   esac
+
+  # Record version/state after install/upgrade
+  sr_record_tool_version "$tool" "$brew_name" "$brew_type"
 }
 
 sr_install_group() {
