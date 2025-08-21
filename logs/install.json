@@ -643,3 +643,13 @@
 {"ts":"2025-08-21T12:51:33+02:00","domain":"Secrets & Certs","tool":"vault","level":"must","status":"installed"}
 {"ts":"2025-08-21T12:51:34+02:00","domain":"Secrets & Certs","tool":"sops","level":"must","status":"installed"}
 {"ts":"2025-08-21T12:52:06+02:00","domain":"Secrets & Certs","tool":"vault-radar","level":"should","status":"installed"}
+{"ts":"2025-08-21T13:07:55+02:00","domain":"Terminal & UX","tool":"zsh","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:07:57+02:00","domain":"Terminal & UX","tool":"tmux","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:07:59+02:00","domain":"Terminal & UX","tool":"bat","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:08:04+02:00","domain":"Terminal & UX","tool":"ripgrep","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:08:04+02:00","domain":"Terminal & UX","tool":"eza","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:08:04+02:00","domain":"Terminal & UX","tool":"fzf","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:08:09+02:00","domain":"Terminal & UX","tool":"powerlevel10k","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:08:16+02:00","domain":"Terminal & UX","tool":"thefuck","level":"should","status":"installed"}
+{"ts":"2025-08-21T13:08:31+02:00","domain":"Terminal & UX","tool":"zsh-autosuggestions","level":"could","status":"installed"}
+{"ts":"2025-08-21T13:08:36+02:00","domain":"Terminal & UX","tool":"zsh-syntax-highlighting","level":"could","status":"installed"}

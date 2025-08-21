@@ -3,7 +3,7 @@
     "installed": true,
     "version": "5.9",
     "source": "brew",
-    "last_checked": "2025-08-21T09:12:19Z",
+    "last_checked": "2025-08-21T11:07:57Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -11,8 +11,8 @@
   "tmux": {
     "installed": true,
     "version": "3.5a",
-    "source": "path",
-    "last_checked": "2025-08-21T09:12:20Z",
+    "source": "brew",
+    "last_checked": "2025-08-21T11:07:59Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -21,7 +21,7 @@
     "installed": true,
     "version": "0.25.0",
     "source": "path",
-    "last_checked": "2025-08-21T09:12:20Z",
+    "last_checked": "2025-08-21T11:07:59Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -30,7 +30,7 @@
     "installed": true,
     "version": "14.1.1",
     "source": "path",
-    "last_checked": "2025-08-21T09:12:25Z",
+    "last_checked": "2025-08-21T11:08:04Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -39,7 +39,7 @@
     "installed": true,
     "version": "0.23.0",
     "source": "path",
-    "last_checked": "2025-08-21T09:12:25Z",
+    "last_checked": "2025-08-21T11:08:04Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -48,7 +48,7 @@
     "installed": true,
     "version": "0.65.1",
     "source": "path",
-    "last_checked": "2025-08-21T09:12:26Z",
+    "last_checked": "2025-08-21T11:08:05Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -57,7 +57,7 @@
     "installed": true,
     "version": "1.20.0",
     "source": "path",
-    "last_checked": "2025-08-21T09:12:32Z",
+    "last_checked": "2025-08-21T11:08:11Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -102,7 +102,7 @@
     "installed": true,
     "version": "3.32",
     "source": "path",
-    "last_checked": "2025-08-20T15:22:28Z",
+    "last_checked": "2025-08-21T11:08:17Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -147,7 +147,7 @@
     "installed": false,
     "version": "",
     "source": "brew",
-    "last_checked": "2025-08-20T10:29:37Z",
+    "last_checked": "2025-08-21T11:08:31Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -156,7 +156,7 @@
     "installed": false,
     "version": "",
     "source": "brew",
-    "last_checked": "2025-08-20T10:29:42Z",
+    "last_checked": "2025-08-21T11:08:36Z",
     "domains": [
       "Terminal & UX"
     ]
