@@ -5,12 +5,18 @@ set -euo pipefail
 # Usage: sr_tools_list "$json_path" must
 sr_tools_list() {
   local json="$1" level="$2"
+  # If .tools is object (old or "B" new), normalize to names
   if jq -e '.tools | type == "object"' "$json" >/dev/null 2>&1; then
-    # Old schema
-    jq -r --arg lvl "$level" '.tools[$lvl][]?' "$json"
+    jq -r --arg lvl "$level" '
+      .tools[$lvl][]?
+      | (if type=="object" then .name else . end)
+      | select(. != null and . != "")
+    ' "$json"
   else
-    # New schema (array of objects)
-    jq -r --arg lvl "$level" '.tools[]? | select(.level == $lvl) | .name' "$json"
+    # .tools is an array of objects (new "A")
+    jq -r --arg lvl "$level" '
+      .tools[]? | select(.level == $lvl) | .name
+    ' "$json"
   fi
 }
 
@@ -257,13 +263,20 @@ sr_semver_cmp() {
 }
 
 # Resolve the likely source of a tool for state recording (brew|webi|path)
+# In helpers.sh
 sr_detect_source() {
   local tool="$1" brew_name="$2" install_kind="$3"
   if [ "$install_kind" = "webi" ]; then
     printf "webi\n"; return
   fi
   if command -v brew >/dev/null 2>&1; then
-    # consider casks too
+    # NEW: if this formula has any installed tap, it’s via brew
+    local short="${brew_name##*/}"
+    if [ -n "$short" ] && brew info --json=v2 "$short" >/dev/null 2>&1; then
+      # if any tap shows up for this short name, call it brew
+      printf "brew\n"; return
+    fi
+    # existing checks
     if [ "$install_kind" = "cask" ] || brew list --cask >/dev/null 2>&1 && brew list --cask | grep -qx "${brew_name:-$tool}"; then
       printf "brew\n"; return
     fi

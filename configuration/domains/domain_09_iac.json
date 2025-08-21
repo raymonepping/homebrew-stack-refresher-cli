@@ -2,6 +2,11 @@
   "domain": "iac",
   "title": "Infrastructure as Code",
   "version": "1.0.0",
+  "brew_tap_for": {
+    "terraform": "hashicorp/tap",
+    "packer": "hashicorp/tap",
+    "vault": "hashicorp/tap"
+  },  
   "tools": [
     {
       "name": "terraform",

@@ -3,6 +3,10 @@
   "title": "Containers & Runtimes",
   "version": "1.0.0",
   "notes": "On macOS we also install Colima as the VM layer. Engine is a one-of.",
+  "brew_tap_for": {
+    "nomad": "hashicorp/nomad",
+    "vault": "hashicorp/tap"
+  },  
   "tools": [
     {
       "name": "colima",

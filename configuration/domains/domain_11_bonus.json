@@ -2,6 +2,12 @@
   "domain": "bonus",
   "title": "Bonus Tools (My Own Brews)",
   "version": "1.0.1",
+  "brew_tap_default": "raymonepping/tap",
+  "brew_tap_for": {
+    "terraform": "hashicorp/tap",
+    "packer": "hashicorp/tap",
+    "vault": "hashicorp/tap"
+  },
   "tools": {
     "must": [
       {

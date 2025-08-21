@@ -410,6 +410,21 @@ sr_tool_brew_tuple() {
     at)                echo "at formula" ;;
     tmux-resurrect)    echo "tmux-resurrect formula" ;;
 
+    # Domain 11 — Bonus (your tap)
+    commit-gh-cli)           echo "raymonepping/tap/commit-gh-cli formula" ;;
+    bump-version-cli)        echo "raymonepping/tap/bump-version-cli formula" ;;
+    sanity-check-cli)        echo "raymonepping/tap/sanity-check-cli formula" ;;
+    folder-tree-cli)         echo "raymonepping/tap/folder-tree-cli formula" ;;
+    slim-container-cli)      echo "raymonepping/tap/slim-container-cli formula" ;;
+    radar-scan-cli)          echo "raymonepping/tap/radar-scan-cli formula" ;;
+    export-docker-image-cli) echo "raymonepping/tap/export-docker-image-cli formula" ;;
+    brew-brain-cli)          echo "raymonepping/tap/brew-brain-cli formula" ;;
+    repository-export-cli)   echo "raymonepping/tap/repository-export-cli formula" ;;
+    repository-backup-cli)   echo "raymonepping/tap/repository-backup-cli formula" ;;
+    repository-audit-cli)    echo "raymonepping/tap/repository-audit-cli formula" ;;
+    self-doc-gen-cli)        echo "raymonepping/tap/self-doc-gen-cli formula" ;;
+    radar-love-cli)          echo "raymonepping/tap/radar-love-cli formula" ;;
+
     # Networking & API extras
     curlie)            echo "curlie formula" ;;
     nmap)              echo "nmap formula" ;;
