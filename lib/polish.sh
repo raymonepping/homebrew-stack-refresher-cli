@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 # Lightweight "polish mode" helpers — all optional.
 
+# Local utility (safe to redefine here)
 have(){ command -v "$1" >/dev/null 2>&1; }
 
-# Detect glam
+# Feature flags (defaults)
+: "${SR_SHOW_SYSTEM:=0}"   # OFF by default; set to 1 or use --show-system to enable
+export SR_SHOW_SYSTEM
+
+# Detect glam-capable environment (cosmetic only)
 export SR_POLISH=0
-if have lolcat || have figlet || have toilet || have cowsay || have glow || have boxes || have neofetch; then
+if have lolcat || have figlet || have toilet || have cowsay || have glow || have boxes || have neofetch || have fastfetch; then
   SR_POLISH=1
 fi
 
@@ -49,9 +54,19 @@ polish_box() {
   fi
 }
 
-# Optional system summary
+# Optional system summary (guarded by SR_SHOW_SYSTEM; outputs via say)
 polish_sysinfo() {
-  if have fastfetch; then fastfetch | polish_colorize
-  elif have neofetch; then neofetch | polish_colorize
+  [ "${SR_SHOW_SYSTEM:-0}" = "1" ] || return 0
+
+  # Prefer fastfetch, then neofetch; pipe through colorizer; emit via say()
+  if have fastfetch; then
+    # Try nicer small logo first, fall back if unsupported
+    if fastfetch --logo small --pipe >/dev/null 2>&1; then
+      fastfetch --logo small --pipe | polish_colorize | while IFS= read -r l; do say "$l"; done
+    else
+      fastfetch | polish_colorize | while IFS= read -r l; do say "$l"; done
+    fi
+  elif have neofetch; then
+    neofetch 2>/dev/null | polish_colorize | while IFS= read -r l; do say "$l"; done
   fi
 }

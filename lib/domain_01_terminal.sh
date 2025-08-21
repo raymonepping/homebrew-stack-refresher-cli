@@ -6,6 +6,7 @@ sr_domain_01_terminal() {
 
   # Fonts + iTerm2 (idempotent)
   sr_install_nerd_font
+  sr_install_shell_completions || true
   # sr_set_iterm2_font
 
 # Optional system summary (OFF by default; enable with SR_SHOW_SYSTEM=1 or --show-system)
@@ -20,4 +21,4 @@ if [ "${SR_SHOW_SYSTEM:-0}" = "1" ]; then
     neofetch 2>/dev/null | while IFS= read -r l; do say "$l"; done
   fi
 fi
-
+}

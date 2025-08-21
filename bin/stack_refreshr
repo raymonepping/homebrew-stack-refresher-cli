@@ -28,6 +28,30 @@ export TELEM_ENABLED TELEM_DRY_RUN
 # Auto-load domain files
 for f in "$SR_LIB"/domain_*.sh; do [ -r "$f" ] && . "$f"; done
 
+# put near the very top, before arg parsing
+if [ "${1:-}" = "__complete" ]; then
+  case "${2:-}" in
+    domains)
+      cat <<'OUT'
+1:Terminal & UX
+2:SSH & Key Management
+3:Git & Source Control
+4:Code & Dev Tools
+5:Containers & Runtimes
+6:Kubernetes (Local Dev)
+7:Secrets & Certs
+8:Observability & Logs
+9:Infrastructure as Code
+10:Automation & Scheduling
+11:Bonus Tools (CLI Suite)
+A:Install ALL MUST (all domains)
+Q:Quit
+OUT
+      ;;
+  esac
+  exit 0
+fi
+
 # Helpers
 have(){ command -v "$1" >/dev/null 2>&1; }
 warn(){ printf "⚠️  %s\n" "$*" >&2; }
@@ -111,6 +135,7 @@ mkdir -p "$SR_LOGS" "$SR_STATE"
 . "$SR_LIB/aliases.sh"
 . "$SR_LIB/timer.sh"
 . "$SR_LIB/telemetry.sh"
+. "$SR_LIB/install_completions.sh"
 
 [ "$SET_ALIASES" = "1" ] && sr_apply_aliases
 

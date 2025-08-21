@@ -3,7 +3,7 @@
     "installed": true,
     "version": "5.9",
     "source": "brew",
-    "last_checked": "2025-08-20T16:40:53Z",
+    "last_checked": "2025-08-21T09:12:19Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -12,7 +12,7 @@
     "installed": true,
     "version": "3.5a",
     "source": "path",
-    "last_checked": "2025-08-20T16:40:54Z",
+    "last_checked": "2025-08-21T09:12:20Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -21,7 +21,7 @@
     "installed": true,
     "version": "0.25.0",
     "source": "path",
-    "last_checked": "2025-08-20T16:40:54Z",
+    "last_checked": "2025-08-21T09:12:20Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -30,7 +30,7 @@
     "installed": true,
     "version": "14.1.1",
     "source": "path",
-    "last_checked": "2025-08-20T16:40:59Z",
+    "last_checked": "2025-08-21T09:12:25Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -39,7 +39,7 @@
     "installed": true,
     "version": "0.23.0",
     "source": "path",
-    "last_checked": "2025-08-20T16:40:59Z",
+    "last_checked": "2025-08-21T09:12:25Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -48,7 +48,7 @@
     "installed": true,
     "version": "0.65.1",
     "source": "path",
-    "last_checked": "2025-08-20T16:40:59Z",
+    "last_checked": "2025-08-21T09:12:26Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -57,7 +57,7 @@
     "installed": true,
     "version": "1.20.0",
     "source": "path",
-    "last_checked": "2025-08-20T16:41:05Z",
+    "last_checked": "2025-08-21T09:12:32Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -246,7 +246,7 @@
     "installed": true,
     "version": "1.19.5",
     "source": "path",
-    "last_checked": "2025-08-20T16:26:10Z",
+    "last_checked": "2025-08-21T10:51:34Z",
     "domains": [
       "Secrets & Certs"
     ]
@@ -254,8 +254,8 @@
   "sops": {
     "installed": true,
     "version": "3.10.2",
-    "source": "brew",
-    "last_checked": "2025-08-20T16:26:12Z",
+    "source": "path",
+    "last_checked": "2025-08-21T10:51:35Z",
     "domains": [
       "Secrets & Certs"
     ]
@@ -429,6 +429,15 @@
     "last_checked": "2025-08-20T15:23:16Z",
     "domains": [
       "Terminal & UX"
+    ]
+  },
+  "vault-radar": {
+    "installed": true,
+    "version": "0.29.0",
+    "source": "brew",
+    "last_checked": "2025-08-21T10:52:08Z",
+    "domains": [
+      "Secrets & Certs"
     ]
   }
 }

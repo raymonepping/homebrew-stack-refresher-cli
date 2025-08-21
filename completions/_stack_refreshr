@@ -1,0 +1,44 @@
+#compdef stack_refreshr
+# Place as: completions/_stack_refreshr
+
+typeset -a _sr_domains
+_sr_domains=(
+  "1:Terminal\\ \\&\\ UX"
+  "2:SSH\\ \\&\\ Key\\ Management"
+  "3:Git\\ \\&\\ Source\\ Control"
+  "4:Code\\ \\&\\ Dev\\ Tools"
+  "5:Containers\\ \\&\\ Runtimes"
+  "6:Kubernetes\\ (Local\\ Dev)"
+  "7:Secrets\\ \\&\\ Certs"
+  "8:Observability\\ \\&\\ Logs"
+  "9:Infrastructure\\ as\\ Code"
+  "10:Automation\\ \\&\\ Scheduling"
+  "11:Bonus\\ Tools\\ (CLI\\ Suite)"
+  "A:Install\\ ALL\\ MUST\\ (all\\ domains)"
+  "Q:Quit"
+)
+
+local -a _sr_telemetry
+_sr_telemetry=(
+  "explain:Show what telemetry collects"
+  "show:Print current telemetry config"
+  "dryrun:Simulate a telemetry send"
+)
+
+_arguments -s -S \
+  '(-h --help)'{-h,--help}'[Show help]' \
+  '--dry-run[Preview actions without installing]' \
+  '--verbose[Show underlying commands]' \
+  '--sequential[Disable parallel installs]' \
+  '--enable-telemetry[Enable telemetry for this run]' \
+  '--telemetry-config=[Path to telemetry.json]:file:_files' \
+  '--set-aliases[Apply recommended aliases]' \
+  '1:command or quick key:((telemetry\:"Telemetry commands" aliases\:"Alias helpers" ${_sr_domains}))' \
+  '2:telemetry subcommand:(_values "telemetry" ${_sr_telemetry})' \
+  '*::arg:->args'
+
+case $state in
+  args)
+    # nothing additional
+  ;;
+esac
