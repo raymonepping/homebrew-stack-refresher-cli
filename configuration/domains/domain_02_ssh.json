@@ -2,9 +2,31 @@
   "domain": "ssh",
   "title": "SSH & Key Management",
   "version": "1.0.0",
-  "tools": {
-    "must": ["openssh"],
-    "should": ["key-rotation-helper", "ssh-audit", "gh-key-upload"],
-    "could": ["age"]
-  }
+  "tools": [
+    {
+      "name": "openssh",
+      "level": "must",
+      "rationale": "Standard SSH client/server; baseline for remote access."
+    },
+    {
+      "name": "key-rotation-helper",
+      "level": "should",
+      "rationale": "Automates SSH key rotation to reduce risk of stale credentials."
+    },
+    {
+      "name": "ssh-audit",
+      "level": "should",
+      "rationale": "Analyzes SSH server config for weak algorithms and settings."
+    },
+    {
+      "name": "gh-key-upload",
+      "level": "should",
+      "rationale": "Uploads local SSH keys to GitHub for easier repo access."
+    },
+    {
+      "name": "age",
+      "level": "could",
+      "rationale": "Simple, modern file encryption tool; complements SSH workflows."
+    }
+  ]
 }

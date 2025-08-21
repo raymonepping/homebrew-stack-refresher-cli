@@ -2,9 +2,76 @@
   "domain": "observability",
   "title": "Observability & Logs",
   "version": "1.0.0",
-  "tools": {
-    "must": ["jq", "bottom", "lnav"],
-    "should": ["yq", "fx", "stern"],
-    "could": ["glow", "logrotate", "viddy", "gping", "duf", "btop", "htop", "httpie"]
-  }
+  "tools": [
+    {
+      "name": "jq",
+      "level": "must",
+      "rationale": "JSON processor; essential for log and API parsing."
+    },
+    {
+      "name": "bottom",
+      "level": "must",
+      "rationale": "Resource monitor with modern TUI for system observability."
+    },
+    {
+      "name": "lnav",
+      "level": "must",
+      "rationale": "Log file navigator; interactive searching and filtering of logs."
+    },
+    {
+      "name": "yq",
+      "level": "should",
+      "rationale": "YAML processor, complementary to jq for config and logs."
+    },
+    {
+      "name": "fx",
+      "level": "should",
+      "rationale": "Interactive JSON viewer and explorer."
+    },
+    {
+      "name": "stern",
+      "level": "should",
+      "rationale": "Streams Kubernetes pod logs with color and regex filters."
+    },
+    {
+      "name": "glow",
+      "level": "could",
+      "rationale": "Terminal markdown reader for viewing docs inline."
+    },
+    {
+      "name": "logrotate",
+      "level": "could",
+      "rationale": "Manages rotating and compressing system logs."
+    },
+    {
+      "name": "viddy",
+      "level": "could",
+      "rationale": "Modern watch command replacement for monitoring outputs."
+    },
+    {
+      "name": "gping",
+      "level": "could",
+      "rationale": "Ping tool with live graphs to visualize latency."
+    },
+    {
+      "name": "duf",
+      "level": "could",
+      "rationale": "Disk usage/free space analyzer with human-friendly TUI."
+    },
+    {
+      "name": "btop",
+      "level": "could",
+      "rationale": "Advanced resource monitor with rich visualization."
+    },
+    {
+      "name": "htop",
+      "level": "could",
+      "rationale": "Classic interactive process viewer."
+    },
+    {
+      "name": "httpie",
+      "level": "could",
+      "rationale": "User-friendly HTTP client for testing APIs."
+    }
+  ]
 }

@@ -3,11 +3,63 @@
   "title": "Containers & Runtimes",
   "version": "1.0.0",
   "notes": "On macOS we also install Colima as the VM layer. Engine is a one-of.",
-  "tools": {
-    "must": ["colima", "compose", "nomad"],
-    "should": ["trivy", "buildah", "skopeo"],
-    "could": ["ctop", "dive", "docker-slim", "syft", "grype"]
-  },
+  "tools": [
+    {
+      "name": "colima",
+      "level": "must",
+      "rationale": "Lightweight VM for Docker/Podman on macOS; provides container runtime layer."
+    },
+    {
+      "name": "compose",
+      "level": "must",
+      "rationale": "Defines and runs multi-container applications declaratively."
+    },
+    {
+      "name": "nomad",
+      "level": "must",
+      "rationale": "HashiCorp scheduler for container and non-container workloads."
+    },
+    {
+      "name": "trivy",
+      "level": "should",
+      "rationale": "Security scanner for container images and filesystem vulnerabilities."
+    },
+    {
+      "name": "buildah",
+      "level": "should",
+      "rationale": "OCI-compliant tool to build container images without Docker daemon."
+    },
+    {
+      "name": "skopeo",
+      "level": "should",
+      "rationale": "Utility for copying, inspecting, and signing container images."
+    },
+    {
+      "name": "ctop",
+      "level": "could",
+      "rationale": "Top-like interface for container monitoring."
+    },
+    {
+      "name": "dive",
+      "level": "could",
+      "rationale": "Image analyzer for understanding Docker image layers."
+    },
+    {
+      "name": "docker-slim",
+      "level": "could",
+      "rationale": "Optimizer that reduces image size and attack surface."
+    },
+    {
+      "name": "syft",
+      "level": "could",
+      "rationale": "Generates SBOMs (Software Bill of Materials) from container images."
+    },
+    {
+      "name": "grype",
+      "level": "could",
+      "rationale": "Vulnerability scanner for container images using SBOMs."
+    }
+  ],
   "engine_one_of": ["docker", "podman"],
   "platform_constraints": {
     "colima": ["darwin"]

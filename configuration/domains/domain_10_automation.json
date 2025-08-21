@@ -2,9 +2,46 @@
   "domain": "automation",
   "title": "Automation & Scheduling",
   "version": "1.0.0",
-  "tools": {
-    "must": ["parallel", "watchexec", "entr"],
-    "should": ["hyperfine", "cron", "tmuxinator"],
-    "could": ["at", "tmux-resurrect"]
-  }
+  "tools": [
+    {
+      "name": "parallel",
+      "level": "must",
+      "rationale": "Run jobs in parallel across multiple CPU cores; essential for scaling scripts."
+    },
+    {
+      "name": "watchexec",
+      "level": "must",
+      "rationale": "Runs commands when files change; ideal for live reloads and automation."
+    },
+    {
+      "name": "entr",
+      "level": "must",
+      "rationale": "Lightweight file-watcher for triggering rebuilds or reloads."
+    },
+    {
+      "name": "hyperfine",
+      "level": "should",
+      "rationale": "Benchmark command-line programs with statistical output."
+    },
+    {
+      "name": "cron",
+      "level": "should",
+      "rationale": "Classic job scheduler for periodic tasks."
+    },
+    {
+      "name": "tmuxinator",
+      "level": "should",
+      "rationale": "Manages complex tmux session setups for automation."
+    },
+    {
+      "name": "at",
+      "level": "could",
+      "rationale": "One-time job scheduler for deferred execution."
+    },
+    {
+      "name": "tmux-resurrect",
+      "level": "could",
+      "rationale": "Restores tmux sessions after restart; improves workflow continuity."
+    }
+  ]
 }

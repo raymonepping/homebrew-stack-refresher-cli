@@ -1,10 +1,32 @@
 {
   "domain": "terminal",
   "title": "Terminal & UX",
-  "version": "1.0.0",
-  "tools": {
-    "must": ["zsh", "tmux", "bat", "ripgrep", "eza", "fzf", "powerlevel10k"],
-    "should": ["fd", "zoxide", "atuin", "thefuck", "tldr", "bash-completion"],
-    "could": ["raycast", "warp", "gum", "figlet", "lolcat", "dust", "procs", "starship", "zsh-autosuggestions", "zsh-syntax-highlighting"]
-  }
+  "version": "2.0.0",
+  "tools": [
+    {"name": "zsh", "level": "must", "rationale": "Primary shell; baseline for Zsh-based UX and plugins."},
+    {"name": "tmux", "level": "must", "rationale": "Terminal multiplexer for panes, sessions, and remote safety."},
+    {"name": "bat", "level": "must", "rationale": "Modern 'cat' with syntax highlighting and pager integration."},
+    {"name": "ripgrep", "level": "must", "rationale": "Fast search tool replacing grep."},
+    {"name": "eza", "level": "must", "rationale": "Modern 'ls' (exa fork) with icons/tree."},
+    {"name": "fzf", "level": "must", "rationale": "Fuzzy finder used across workflows."},
+    {"name": "powerlevel10k", "level": "must", "rationale": "Fast, modern Zsh prompt enhancing productivity."},
+
+    {"name": "fd", "level": "should", "rationale": "Modern 'find' with sane defaults and speed."},
+    {"name": "zoxide", "level": "should", "rationale": "Smarter 'cd' based on frecency."},
+    {"name": "atuin", "level": "should", "rationale": "Shell history with sync and search."},
+    {"name": "thefuck", "level": "should", "rationale": "Corrects mistyped console commands."},
+    {"name": "tldr", "level": "should", "rationale": "Simplified man pages with examples."},
+    {"name": "bash-completion", "level": "should", "rationale": "Programmable completion for bash."},
+
+    {"name": "raycast", "level": "could", "rationale": "macOS launcher to trigger scripts quickly."},
+    {"name": "warp", "level": "could", "rationale": "Next-gen terminal (macOS)."},
+    {"name": "gum", "level": "could", "rationale": "Pretty TUI prompts; enhances UX if available."},
+    {"name": "figlet", "level": "could", "rationale": "ASCII banners for fun or section headers."},
+    {"name": "lolcat", "level": "could", "rationale": "Rainbow styling for fun, optional flair."},
+    {"name": "dust", "level": "could", "rationale": "Disk usage viewer, like du but better."},
+    {"name": "procs", "level": "could", "rationale": "Modern replacement for ps."},
+    {"name": "starship", "level": "could", "rationale": "Cross-shell prompt written in Rust."},
+    {"name": "zsh-autosuggestions", "level": "could", "rationale": "Suggests completions as you type in Zsh."},
+    {"name": "zsh-syntax-highlighting", "level": "could", "rationale": "Syntax highlighting for Zsh."}
+  ]
 }

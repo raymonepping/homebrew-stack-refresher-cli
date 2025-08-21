@@ -3,10 +3,37 @@
   "title": "Kubernetes (Local Dev)",
   "version": "1.0.0",
   "notes": "Cluster flavor is a one-of; the non-chosen one can be offered as SHOULD.",
-  "tools": {
-    "must": ["kubectl", "helm"],
-    "should": ["k9s", "stern"],
-    "could": ["kubectx", "kubens"]
-  },
+  "tools": [
+    {
+      "name": "kubectl",
+      "level": "must",
+      "rationale": "Primary CLI to interact with Kubernetes clusters."
+    },
+    {
+      "name": "helm",
+      "level": "must",
+      "rationale": "Package manager for Kubernetes applications using charts."
+    },
+    {
+      "name": "k9s",
+      "level": "should",
+      "rationale": "TUI for managing Kubernetes resources interactively."
+    },
+    {
+      "name": "stern",
+      "level": "should",
+      "rationale": "Tail logs from multiple Kubernetes pods with label selectors."
+    },
+    {
+      "name": "kubectx",
+      "level": "could",
+      "rationale": "Simplifies context switching between Kubernetes clusters."
+    },
+    {
+      "name": "kubens",
+      "level": "could",
+      "rationale": "Quickly switch between Kubernetes namespaces."
+    }
+  ],
   "cluster_one_of": ["k3d", "kind", "k3s"]
 }

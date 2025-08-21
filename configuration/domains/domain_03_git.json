@@ -2,9 +2,51 @@
   "domain": "git",
   "title": "Git & Source Control",
   "version": "1.0.0",
-  "tools": {
-    "must": ["git", "gh", "pre-commit", "delta"],
-    "should": ["lazygit", "gitleaks", "git-secrets"],
-    "could": ["git-cliff", "gpg"]
-  }
+  "tools": [
+    {
+      "name": "git",
+      "level": "must",
+      "rationale": "Core version control system; foundation for all workflows."
+    },
+    {
+      "name": "gh",
+      "level": "must",
+      "rationale": "GitHub CLI for managing repos, PRs, and issues directly."
+    },
+    {
+      "name": "pre-commit",
+      "level": "must",
+      "rationale": "Framework for managing Git hooks; enforces checks pre-push."
+    },
+    {
+      "name": "delta",
+      "level": "must",
+      "rationale": "Improved diff viewer for Git with syntax highlighting."
+    },
+    {
+      "name": "lazygit",
+      "level": "should",
+      "rationale": "Terminal UI for Git; simplifies commits, merges, and rebases."
+    },
+    {
+      "name": "gitleaks",
+      "level": "should",
+      "rationale": "Scans repos for hardcoded secrets and sensitive data."
+    },
+    {
+      "name": "git-secrets",
+      "level": "should",
+      "rationale": "Prevents committing AWS keys and other sensitive credentials."
+    },
+    {
+      "name": "git-cliff",
+      "level": "could",
+      "rationale": "Generates changelogs from conventional commits."
+    },
+    {
+      "name": "gpg",
+      "level": "could",
+      "rationale": "Enables commit signing and verification of contributors."
+    }
+  ]
 }

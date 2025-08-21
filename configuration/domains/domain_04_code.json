@@ -2,9 +2,96 @@
   "domain": "code",
   "title": "Code & Dev Tools",
   "version": "1.0.0",
-  "tools": {
-    "must": ["just", "direnv", "shellcheck"],
-    "should": ["vscode", "prettier", "asdf", "jsonlint", "yamllint", "eslint", "pylint"],
-    "could": ["shfmt", "black", "hadolint", "nvm", "pyenv", "mise", "commitizen", "lefthook"]
-  }
+  "tools": [
+    {
+      "name": "just",
+      "level": "must",
+      "rationale": "Command runner; a modern replacement for Makefiles."
+    },
+    {
+      "name": "direnv",
+      "level": "must",
+      "rationale": "Manages environment variables per project; integrates with shells."
+    },
+    {
+      "name": "shellcheck",
+      "level": "must",
+      "rationale": "Static analysis for shell scripts; finds bugs and style issues."
+    },
+    {
+      "name": "vscode",
+      "level": "should",
+      "rationale": "Widely used IDE with rich extensions and debugging support."
+    },
+    {
+      "name": "prettier",
+      "level": "should",
+      "rationale": "Code formatter for JavaScript, JSON, Markdown, and more."
+    },
+    {
+      "name": "asdf",
+      "level": "should",
+      "rationale": "Runtime version manager for multiple languages and tools."
+    },
+    {
+      "name": "jsonlint",
+      "level": "should",
+      "rationale": "Validator and formatter for JSON files."
+    },
+    {
+      "name": "yamllint",
+      "level": "should",
+      "rationale": "Linter for YAML files to catch errors and enforce style."
+    },
+    {
+      "name": "eslint",
+      "level": "should",
+      "rationale": "JavaScript/TypeScript linter; enforces code quality rules."
+    },
+    {
+      "name": "pylint",
+      "level": "should",
+      "rationale": "Linter for Python code, enforcing style and best practices."
+    },
+    {
+      "name": "shfmt",
+      "level": "could",
+      "rationale": "Formatter for shell scripts; ensures consistent style."
+    },
+    {
+      "name": "black",
+      "level": "could",
+      "rationale": "Opinionated Python code formatter; enforces consistency."
+    },
+    {
+      "name": "hadolint",
+      "level": "could",
+      "rationale": "Linter for Dockerfiles; prevents common mistakes."
+    },
+    {
+      "name": "nvm",
+      "level": "could",
+      "rationale": "Node.js version manager; useful for JavaScript projects."
+    },
+    {
+      "name": "pyenv",
+      "level": "could",
+      "rationale": "Python version manager; allows multiple runtime installations."
+    },
+    {
+      "name": "mise",
+      "level": "could",
+      "rationale": "Alternative runtime version manager, faster and simpler than asdf."
+    },
+    {
+      "name": "commitizen",
+      "level": "could",
+      "rationale": "Helps enforce conventional commit messages for automation."
+    },
+    {
+      "name": "lefthook",
+      "level": "could",
+      "rationale": "Fast, polyglot Git hooks manager for projects."
+    }
+  ]
 }

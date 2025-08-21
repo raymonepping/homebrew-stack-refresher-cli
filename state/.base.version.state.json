@@ -3,7 +3,7 @@
     "installed": true,
     "version": "5.9",
     "source": "brew",
-    "last_checked": "2025-08-21T12:08:23Z",
+    "last_checked": "2025-08-21T12:45:31Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -12,7 +12,7 @@
     "installed": true,
     "version": "3.5a",
     "source": "path",
-    "last_checked": "2025-08-21T12:08:24Z",
+    "last_checked": "2025-08-21T12:45:32Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -21,7 +21,7 @@
     "installed": true,
     "version": "0.25.0",
     "source": "path",
-    "last_checked": "2025-08-21T12:08:24Z",
+    "last_checked": "2025-08-21T12:45:32Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -30,7 +30,7 @@
     "installed": true,
     "version": "14.1.1",
     "source": "path",
-    "last_checked": "2025-08-21T12:08:29Z",
+    "last_checked": "2025-08-21T12:45:37Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -39,7 +39,7 @@
     "installed": true,
     "version": "0.23.0",
     "source": "path",
-    "last_checked": "2025-08-21T12:08:29Z",
+    "last_checked": "2025-08-21T12:45:37Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -48,7 +48,7 @@
     "installed": true,
     "version": "0.65.1",
     "source": "path",
-    "last_checked": "2025-08-21T12:08:29Z",
+    "last_checked": "2025-08-21T12:45:37Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -57,7 +57,7 @@
     "installed": true,
     "version": "1.20.0",
     "source": "path",
-    "last_checked": "2025-08-21T12:08:35Z",
+    "last_checked": "2025-08-21T12:45:44Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -102,7 +102,7 @@
     "installed": true,
     "version": "3.32",
     "source": "path",
-    "last_checked": "2025-08-21T11:08:17Z",
+    "last_checked": "2025-08-21T12:44:23Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -120,7 +120,7 @@
     "installed": true,
     "version": "0.16.2",
     "source": "path",
-    "last_checked": "2025-08-20T15:22:54Z",
+    "last_checked": "2025-08-21T12:44:32Z",
     "domains": [
       "Terminal & UX"
     ]

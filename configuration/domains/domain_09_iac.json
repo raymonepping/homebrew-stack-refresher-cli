@@ -2,9 +2,51 @@
   "domain": "iac",
   "title": "Infrastructure as Code",
   "version": "1.0.0",
-  "tools": {
-    "must": ["terraform", "tflint", "packer"],
-    "should": ["tfsec", "checkov", "terragrunt"],
-    "could": ["terraform-docs", "tfenv", "consul"]
-  }
+  "tools": [
+    {
+      "name": "terraform",
+      "level": "must",
+      "rationale": "Core IaC tool for provisioning infrastructure across providers."
+    },
+    {
+      "name": "tflint",
+      "level": "must",
+      "rationale": "Linter for Terraform configurations; enforces standards and prevents errors."
+    },
+    {
+      "name": "packer",
+      "level": "must",
+      "rationale": "Builds machine and container images in a repeatable way."
+    },
+    {
+      "name": "tfsec",
+      "level": "should",
+      "rationale": "Security scanner for Terraform code."
+    },
+    {
+      "name": "checkov",
+      "level": "should",
+      "rationale": "Static analysis for IaC security across Terraform, Kubernetes, and more."
+    },
+    {
+      "name": "terragrunt",
+      "level": "should",
+      "rationale": "Wrapper for Terraform that adds workflow improvements and DRY configs."
+    },
+    {
+      "name": "terraform-docs",
+      "level": "could",
+      "rationale": "Generates documentation from Terraform modules."
+    },
+    {
+      "name": "tfenv",
+      "level": "could",
+      "rationale": "Manages multiple Terraform versions easily."
+    },
+    {
+      "name": "consul",
+      "level": "could",
+      "rationale": "Service discovery and configuration; complements IaC with runtime services."
+    }
+  ]
 }
