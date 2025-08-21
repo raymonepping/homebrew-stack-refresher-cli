@@ -1,6 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Print tool names for a level (must|should|could) from either schema.
+# Usage: sr_tools_list "$json_path" must
+sr_tools_list() {
+  local json="$1" level="$2"
+  if jq -e '.tools | type == "object"' "$json" >/dev/null 2>&1; then
+    # Old schema
+    jq -r --arg lvl "$level" '.tools[$lvl][]?' "$json"
+  else
+    # New schema (array of objects)
+    jq -r --arg lvl "$level" '.tools[]? | select(.level == $lvl) | .name' "$json"
+  fi
+}
+
+# True/false: does this JSON use the new object-array schema?
+sr_tools_schema_is_array() {
+  local json="$1"
+  jq -e '.tools | type == "array"' "$json" >/dev/null 2>&1
+}
+
 # Utility: run a domain function if it exists, otherwise warn
 sr_run_or_warn() {
   local fn="$1"; shift || true
