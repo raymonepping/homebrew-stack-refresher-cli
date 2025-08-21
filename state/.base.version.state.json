@@ -448,5 +448,14 @@
     "domains": [
       "Terminal & UX"
     ]
+  },
+  "{": {
+    "installed": true,
+    "version": "",
+    "source": "path",
+    "last_checked": "2025-08-21T13:05:29Z",
+    "domains": [
+      "Bonus Tools (My Own Brews)"
+    ]
   }
 }
