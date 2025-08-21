@@ -174,21 +174,26 @@ sr_run_domain() {
     return 1
   fi
 
-  # measure duration (independent of pretty timer output)
-  local _start _end _dur
+  # measure duration for telemetry (independent of pretty timer output)
+  local _start _end _dur rc
   _start=$(date +%s)
 
-  # pretty timer + error-safe run
-  timer_wrap "$fn" sr_run_or_warn "$fn" "$mode"
+  # pretty timer (style controlled by $SR_TIMING_STYLE) + error-safe run
+  # use key "<fn>:<mode>" so brief output is clearer
+  timer_wrap "${fn}:${mode}" sr_run_or_warn "$fn" "$mode"
+  rc=$?
 
   _end=$(date +%s)
   _dur=$((_end - _start))
 
-  # Telemetry (opt-in) — domain name is the function name, status "complete"
-  # Include mode for context (full/must/etc)
+  # Telemetry (opt-in)
   if telemetry_enabled; then
-    telemetry_send_event "$fn" "complete" "$_dur" "" "{\"mode\":\"$mode\"}"
+    local status="complete"
+    [ $rc -ne 0 ] && status="error"
+    telemetry_send_event "$fn" "$status" "$_dur" "" "{\"mode\":\"$mode\"}"
   fi
+
+  return $rc
 }
 
 # ALL MUST using same map/order

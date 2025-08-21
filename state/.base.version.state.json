@@ -3,7 +3,7 @@
     "installed": true,
     "version": "5.9",
     "source": "brew",
-    "last_checked": "2025-08-21T11:14:48Z",
+    "last_checked": "2025-08-21T11:40:07Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -12,7 +12,7 @@
     "installed": true,
     "version": "3.5a",
     "source": "path",
-    "last_checked": "2025-08-21T11:14:49Z",
+    "last_checked": "2025-08-21T11:40:08Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -21,7 +21,7 @@
     "installed": true,
     "version": "0.25.0",
     "source": "path",
-    "last_checked": "2025-08-21T11:14:49Z",
+    "last_checked": "2025-08-21T11:40:08Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -30,7 +30,7 @@
     "installed": true,
     "version": "14.1.1",
     "source": "path",
-    "last_checked": "2025-08-21T11:14:54Z",
+    "last_checked": "2025-08-21T11:40:13Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -39,7 +39,7 @@
     "installed": true,
     "version": "0.23.0",
     "source": "path",
-    "last_checked": "2025-08-21T11:14:54Z",
+    "last_checked": "2025-08-21T11:40:13Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -48,7 +48,7 @@
     "installed": true,
     "version": "0.65.1",
     "source": "path",
-    "last_checked": "2025-08-21T11:14:55Z",
+    "last_checked": "2025-08-21T11:40:14Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -57,7 +57,7 @@
     "installed": true,
     "version": "1.20.0",
     "source": "path",
-    "last_checked": "2025-08-21T11:15:01Z",
+    "last_checked": "2025-08-21T11:40:20Z",
     "domains": [
       "Terminal & UX"
     ]

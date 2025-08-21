@@ -661,3 +661,17 @@
 {"ts":"2025-08-21T13:14:54+02:00","domain":"Terminal & UX","tool":"fzf","level":"must","status":"installed"}
 {"ts":"2025-08-21T13:14:59+02:00","domain":"Terminal & UX","tool":"powerlevel10k","level":"must","status":"installed"}
 {"ts":"2025-08-21T13:15:14+02:00","domain":"Terminal & UX","tool":"bash-completion","level":"should","status":"installed"}
+{"ts":"2025-08-21T13:37:02+02:00","domain":"Terminal & UX","tool":"zsh","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:37:03+02:00","domain":"Terminal & UX","tool":"tmux","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:37:04+02:00","domain":"Terminal & UX","tool":"bat","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:37:09+02:00","domain":"Terminal & UX","tool":"ripgrep","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:37:09+02:00","domain":"Terminal & UX","tool":"eza","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:37:10+02:00","domain":"Terminal & UX","tool":"fzf","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:37:14+02:00","domain":"Terminal & UX","tool":"powerlevel10k","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:40:06+02:00","domain":"Terminal & UX","tool":"zsh","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:40:07+02:00","domain":"Terminal & UX","tool":"tmux","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:40:08+02:00","domain":"Terminal & UX","tool":"bat","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:40:13+02:00","domain":"Terminal & UX","tool":"ripgrep","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:40:13+02:00","domain":"Terminal & UX","tool":"eza","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:40:13+02:00","domain":"Terminal & UX","tool":"fzf","level":"must","status":"installed"}
+{"ts":"2025-08-21T13:40:18+02:00","domain":"Terminal & UX","tool":"powerlevel10k","level":"must","status":"installed"}

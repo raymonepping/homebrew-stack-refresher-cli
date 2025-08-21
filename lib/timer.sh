@@ -6,6 +6,8 @@
 declare -gA _TIMER_START_EPOCH=()
 declare -gA _TIMER_START_HUMAN=()
 
+: "${SR_TIMING_STYLE:=brief}"
+
 # Start a timer: timer_start "key"
 timer_start() {
   local key="${1:-default}"
