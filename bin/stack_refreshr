@@ -164,7 +164,6 @@ sr_domain_slug() {
 }
 
 # Run a domain by numeric key, with mode (full|must), with timer + telemetry
-# Run a domain by numeric key, with a given mode (default: full)
 sr_run_domain() {
   local num="$1"; shift || true
   local mode="${1:-full}"

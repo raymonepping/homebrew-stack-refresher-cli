@@ -27,5 +27,8 @@ sr_install_shell_completions() {
       install -d "$prefix/share/fish/vendor_completions.d"
       install -m 0644 "$src/stack_refreshr.fish" "$prefix/share/fish/vendor_completions.d/stack_refreshr.fish"
     fi
+
+    say "🔌 Installed shell completions to Homebrew share directories"
+
   fi
 }

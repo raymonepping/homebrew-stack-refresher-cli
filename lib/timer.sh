@@ -26,6 +26,21 @@ _timer_pretty() {
   printf "%s" "${out% }"
 }
 
+# One-liner end: "⏱️ <key>: 1m 07s"
+timer_end_brief() {
+  local key="${1:-default}"
+  local start_epoch="${_TIMER_START_EPOCH["$key"]:-}"
+  if [ -z "$start_epoch" ]; then
+    echo "⚠️  No timer started for \"$key\"" >&2
+    return 1
+  fi
+  local now dur
+  now="$(date +%s)"
+  dur=$(( now - start_epoch ))
+  echo "⏱️ ${key}: $(_timer_pretty "$dur")"
+  unset "_TIMER_START_EPOCH[$key]" "_TIMER_START_HUMAN[$key]"
+}
+
 # Stop & print: timer_end "key"
 # Prints:
 #   ⏱️ Started at 08:41:23

@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "tools": {
     "must": ["zsh", "tmux", "bat", "ripgrep", "eza", "fzf", "powerlevel10k"],
-    "should": ["fd", "zoxide", "atuin", "thefuck", "tldr"],
+    "should": ["fd", "zoxide", "atuin", "thefuck", "tldr", "bash-completion"],
     "could": ["raycast", "warp", "gum", "figlet", "lolcat", "dust", "procs", "starship", "zsh-autosuggestions", "zsh-syntax-highlighting"]
   }
 }

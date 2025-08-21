@@ -385,12 +385,24 @@ sr_brew_maybe_upgrade() {
   esac
 }
 
-# helpers.sh
+# SR_TIMING_STYLE can be: full (default), brief, none
 timer_wrap() {
   local key="$1"; shift
   timer_start "$key"
   "$@"
-  timer_end_say "$key"
+  case "${SR_TIMING_STYLE:-full}" in
+    none) : ;;  # say nothing
+    brief)
+      while IFS= read -r line; do
+        say "$line"
+      done < <(timer_end_brief "$key")
+      ;;
+    *)
+      while IFS= read -r line; do
+        say "$line"
+      done < <(timer_end "$key")
+      ;;
+  esac
 }
 
 # helpers.sh
