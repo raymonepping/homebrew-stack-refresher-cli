@@ -151,6 +151,7 @@ declare -A domain_map=(
   [8]=sr_domain_08_observability
   [9]=sr_domain_09_iac
   [10]=sr_domain_10_automation
+  [11]=sr_domain_11_bonus  
 )
 
 # Order for ALL MUST
@@ -225,7 +226,7 @@ while true; do
   [ -n "${choice:-}" ] || continue
 
   case "${choice^^}" in
-    [1-9]|10)
+    [1-9]|10|11)
       sr_run_domain "$choice" "full"
       ;;
     A)
