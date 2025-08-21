@@ -2,6 +2,10 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Defaults (top of main)
+export SR_SHOW_SYSTEM="${SR_SHOW_SYSTEM:-0}"
+
 export SR_ROOT="$ROOT"
 export SR_CONF="${SR_CONF:-$ROOT/configuration}"
 export SR_LIB="$ROOT/lib"
@@ -45,6 +49,7 @@ EOF
 while [ $# -gt 0 ]; do
   case "$1" in
     --dry-run) DRY_RUN=1 ;;
+    --show-system) SR_SHOW_SYSTEM=1 ;;
     --verbose) VERBOSE=1 ;;
     --sequential) PARALLEL=0 ;;
     --enable-telemetry) TELEM_ENABLED=1 ;;

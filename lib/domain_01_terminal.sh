@@ -6,19 +6,18 @@ sr_domain_01_terminal() {
 
   # Fonts + iTerm2 (idempotent)
   sr_install_nerd_font
-  sr_set_iterm2_font
+  # sr_set_iterm2_font
 
-  # Optional polish info
-  if [ "${SR_POLISH:-0}" -eq 1 ]; then
-    if have fastfetch; then
-      # Safely try a “nice” run, fall back to default
-      if fastfetch --logo small --pipe >/dev/null 2>&1; then
-        fastfetch --logo small --pipe | while IFS= read -r l; do say "$l"; done
-      else
-        fastfetch | while IFS= read -r l; do say "$l"; done
-      fi
-    elif have neofetch; then
-      neofetch 2>/dev/null | while IFS= read -r l; do say "$l"; done
+# Optional system summary (OFF by default; enable with SR_SHOW_SYSTEM=1 or --show-system)
+if [ "${SR_SHOW_SYSTEM:-0}" = "1" ]; then
+  if have fastfetch; then
+    if fastfetch --logo small --pipe >/dev/null 2>&1; then
+      fastfetch --logo small --pipe | while IFS= read -r l; do say "$l"; done
+    else
+      fastfetch | while IFS= read -r l; do say "$l"; done
     fi
+  elif have neofetch; then
+    neofetch 2>/dev/null | while IFS= read -r l; do say "$l"; done
   fi
-}
+fi
+

@@ -1,106 +1,105 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Dependencies:
-# - jq (for JSON)
-# - curl or gh (either works; gh preferred if authenticated)
-# - say() should exist (from your helpers/ui)
+# telemetry.sh — GitHub Gist JSONL appender (opt-in)
+# - Config path: ~/.config/stack_refreshr/telemetry.json
+# - Respects: TELEM_ENABLED, TELEM_DRY_RUN, SR_TELEM_CFG, GITHUB_TOKEN, gh auth
+# - Creates gist if missing; persists gist_id back into config.
 
-# Default config path
+# --- basic deps / helpers ---
+have(){ command -v "$1" >/dev/null 2>&1; }
+say(){ printf "%s\n" "$*" >&2; }
+
+# Defaults
 : "${TELEM_ENABLED:=0}"
 : "${TELEM_DRY_RUN:=0}"
 : "${SR_CFG_DIR:="$HOME/.config/stack_refreshr"}"
 : "${SR_TELEM_CFG:="$SR_CFG_DIR/telemetry.json"}"
 : "${SR_LOGS:="${SR_LOGS:-$SR_ROOT/logs}"}"
-: "${TELEM_VERBOSE:=${VERBOSE:-0}}"
 mkdir -p "$SR_CFG_DIR" "$SR_LOGS"
 
-have(){ command -v "$1" >/dev/null 2>&1; }
-
-# --- load config (safe defaults) ---
+# --- config loader ---
 telemetry_load_cfg() {
-  # Defaults if no config file
-  TELEM_ENABLED="${TELEM_ENABLED:-0}"
   TELEM_UPLOAD_URL="${TELEM_UPLOAD_URL:-https://api.github.com/gists}"
   TELEM_GIST_ID="${TELEM_GIST_ID:-}"
-  TELEM_DRY_RUN="${TELEM_DRY_RUN:-0}"
   TELEM_FIELDS_DEFAULT='["domain","status","version","duration_sec","timestamp","refreshr_version"]'
   TELEM_FIELDS="${TELEM_FIELDS:-$TELEM_FIELDS_DEFAULT}"
 
   if [ -s "$SR_TELEM_CFG" ] && have jq; then
-    # enabled
-    v="$(jq -r '.enabled // empty' "$SR_TELEM_CFG" || true)"; [ -n "$v" ] && TELEM_ENABLED="$v"
-    # upload_url
-    v="$(jq -r '.upload_url // empty' "$SR_TELEM_CFG" || true)"; [ -n "$v" ] && TELEM_UPLOAD_URL="$v"
-    # gist_id
-    v="$(jq -r '.gist_id // empty' "$SR_TELEM_CFG" || true)"; [ -n "$v" ] && TELEM_GIST_ID="$v"
-    # github_token path not read here (we NEVER write secrets into code), see telemetry_token()
-    # fields
-    v="$(jq -c '.fields // empty' "$SR_TELEM_CFG" || true)"; [ -n "$v" ] && TELEM_FIELDS="$v"
+    v="$(jq -r '.enabled // empty' "$SR_TELEM_CFG" 2>/dev/null || true)"; [ -n "$v" ] && TELEM_ENABLED="$v"
+    v="$(jq -r '.upload_url // empty' "$SR_TELEM_CFG" 2>/dev/null || true)"; [ -n "$v" ] && TELEM_UPLOAD_URL="$v"
+    v="$(jq -r '.gist_id // empty'    "$SR_TELEM_CFG" 2>/dev/null || true)"; [ -n "$v" ] && TELEM_GIST_ID="$v"
+    v="$(jq -c '.fields // empty'     "$SR_TELEM_CFG" 2>/dev/null || true)"; [ -n "$v" ] && TELEM_FIELDS="$v"
   fi
 
-  export TELEM_ENABLED TELEM_UPLOAD_URL TELEM_GIST_ID TELEM_DRY_RUN TELEM_FIELDS
+  export TELEM_ENABLED TELEM_UPLOAD_URL TELEM_GIST_ID TELEM_FIELDS TELEM_DRY_RUN
 }
 
 telemetry_cfg_enabled() {
-  [ -s "$SR_TELEM_CFG" ] && jq -r '.enabled // false' "$SR_TELEM_CFG" 2>/dev/null | grep -qi true
+  [ -s "$SR_TELEM_CFG" ] && have jq && jq -r '.enabled // false' "$SR_TELEM_CFG" 2>/dev/null | grep -qi true
 }
 
 telemetry_enabled() {
-  # Enabled if flag OR config says so.
   [ "${TELEM_ENABLED:-0}" = "1" ] || telemetry_cfg_enabled
 }
 
-
-# --- token discovery (never hard-code) ---
+# --- token discovery (never hardcode) ---
 telemetry_token() {
-  # Priority: env var, gh CLI, macOS Keychain, else empty
+  # 1) explicit env
   if [ -n "${GITHUB_TOKEN:-}" ]; then
     printf '%s' "$GITHUB_TOKEN"
     return 0
   fi
+  # 2) gh auth
   if have gh; then
-    # gh prints a token if you're logged in; returns non-zero otherwise
     if tok="$(gh auth token 2>/dev/null || true)"; then
       [ -n "$tok" ] && printf '%s' "$tok" && return 0
     fi
   fi
-  # macOS keychain (optional): item named "stack_refreshr_github_token"
+  # 3) macOS keychain (optional)
   if have security; then
     if tok="$(security find-generic-password -s stack_refreshr_github_token -w 2>/dev/null || true)"; then
       [ -n "$tok" ] && printf '%s' "$tok" && return 0
     fi
   fi
-  printf ''  # no token found
+  printf ''  # none
 }
 
-# --- filename per-day to avoid large single file ---
+# --- utility: current day filename ---
 telemetry_filename_for_today() {
   date +"telemetry-%Y-%m-%d.jsonl"
 }
 
-# --- build minimal payload (jq if present) ---
+# --- payload builder ---
 telemetry_payload_json() {
-  # args: domain status duration_sec [version] [extra_kv_json]
-  local domain="$1" status="$2" duration="${3:-0}" version="${4:-}"
-  local extra_json="${5:-}"   # optional, must be valid JSON object fragment (e.g. {"tool":"ripgrep"})
+  # args: domain status duration_sec [version] [extra_json]
+  local domain="$1" status="$2" duration="${3:-0}" version="${4:-}" extra_json="${5:-}"
   local ts refreshr_ver
   ts="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
   refreshr_ver="${SR_VERSION:-0.0.0}"
 
   if have jq; then
-    jq -n --arg d "$domain" --arg s "$status" --arg v "$version" \
-          --arg ts "$ts" --arg rv "$refreshr_ver" --argjson dur "${duration:-0}" '
-      {domain:$d, status:$s, version:$v, duration_sec:($dur|tonumber), timestamp:$ts, refreshr_version:$rv}
-    ' | jq -c ". + (${extra_json:-{}})"
+    # build the base object
+    local base
+    base="$(jq -n --arg d "$domain" --arg s "$status" --arg v "$version" \
+                 --arg ts "$ts" --arg rv "$refreshr_ver" --argjson dur "${duration:-0}" '
+             {domain:$d, status:$s, version:$v, duration_sec:($dur|tonumber), timestamp:$ts, refreshr_version:$rv}
+           ')"
+
+    # if extra_json parses, merge it; otherwise just output base
+    if [ -n "$extra_json" ] && echo "$extra_json" | jq -e . >/dev/null 2>&1; then
+      jq -c -s '.[0] * .[1]' <(printf '%s' "$base") <(printf '%s' "$extra_json")
+    else
+      printf '%s\n' "$base"
+    fi
   else
-    # Very simple JSON (no escaping for special chars)
+    # naive JSON if jq missing (avoid quotes in inputs please)
     printf '{"domain":"%s","status":"%s","version":"%s","duration_sec":%s,"timestamp":"%s","refreshr_version":"%s"}' \
       "$domain" "$status" "$version" "${duration:-0}" "$ts" "$refreshr_ver"
   fi
 }
 
-# --- local log fallback (no token) ---
+# --- local fallback ---
 telemetry_local_append() {
   local line="$1"
   local file="$SR_LOGS/$(telemetry_filename_for_today)"
@@ -108,83 +107,125 @@ telemetry_local_append() {
   say "📝 Telemetry (local): appended to $file"
 }
 
-# --- send to Gist via gh or curl ---
+# --- create gist if missing, save gist_id back to config ---
+telemetry_ensure_gist() {
+  [ -n "${TELEM_GIST_ID:-}" ] && return 0
+
+  local tok; tok="$(telemetry_token)"
+  [ -z "$tok" ] && { say "⚠️  No GitHub token; logging locally."; return 1; }
+
+  local filename; filename="$(telemetry_filename_for_today)"
+  local desc="stack_refreshr telemetry (JSONL events)"
+  local new_id=""
+
+  if have gh; then
+    # gh expects GH_TOKEN
+    GH_TOKEN="$tok" gh api -X POST /gists \
+      -f description="$desc" -F public=false \
+      -F "files[$filename][content]=stack_refreshr telemetry" \
+      --jq '.id' >/tmp/.sr_gist_id 2>/dev/null || true
+    new_id="$(cat /tmp/.sr_gist_id 2>/dev/null || true)"
+    rm -f /tmp/.sr_gist_id
+  fi
+
+  if [ -z "$new_id" ]; then
+    # curl fallback
+    new_id="$(curl -sS -H "Authorization: token $tok" -H "Accept: application/vnd.github+json" \
+      -X POST "$TELEM_UPLOAD_URL" \
+      -d "{\"description\":\"$desc\",\"public\":false,\"files\":{\"$filename\":{\"content\":\"stack_refreshr telemetry\"}}}" \
+      | (have jq && jq -r '.id' || sed -n 's/.*"id":"\([^"]*\)".*/\1/p'))"
+  fi
+
+  if [ -z "$new_id" ]; then
+    say "⚠️  Failed to create gist; logging locally."
+    return 1
+  fi
+
+  TELEM_GIST_ID="$new_id"
+  export TELEM_GIST_ID
+
+  # Persist gist_id back into config
+  if have jq; then
+    tmp="$(mktemp)"
+    if [ -s "$SR_TELEM_CFG" ]; then
+      jq --arg id "$TELEM_GIST_ID" '.gist_id = $id' "$SR_TELEM_CFG" > "$tmp" 2>/dev/null || echo "{\"gist_id\":\"$TELEM_GIST_ID\"}" > "$tmp"
+    else
+      echo "{\"enabled\":true,\"gist_id\":\"$TELEM_GIST_ID\"}" > "$tmp"
+    fi
+    mv "$tmp" "$SR_TELEM_CFG"
+  else
+    printf '{"enabled": true, "gist_id": "%s"}\n' "$TELEM_GIST_ID" > "$SR_TELEM_CFG"
+  fi
+
+  say "🔗 Telemetry: created gist $TELEM_GIST_ID"
+  return 0
+}
+
+# --- append one JSONL line into the day file ---
 telemetry_append_to_gist() {
   local line="$1"
   local filename="$2"
-  local gist_id="${TELEM_GIST_ID:-}"
+  local tok; tok="$(telemetry_token)"
+  [ -z "$tok" ] && { telemetry_local_append "$line"; return 0; }
 
-  if [ -z "$gist_id" ]; then
-    # Create a new private gist once
-    local desc="stack_refreshr telemetry"
-    if have gh; then
-      # gh: create with initial file content
-      gist_id="$(GH_TOKEN="$(telemetry_token)" gh api -X POST /gists -f description="$desc" -F public=false \
-        -F "files[$filename][content]=$line" --jq '.id' 2>/dev/null || true)"
-    else
-      # curl: create
-      local tok; tok="$(telemetry_token)"
-      [ -z "$tok" ] && { say "⚠️ No token; falling back to local telemetry."; telemetry_local_append "$line"; return 0; }
-      gist_id="$(curl -sS -H "Authorization: token $tok" \
-        -H "Accept: application/vnd.github+json" \
-        -X POST "$TELEM_UPLOAD_URL" \
-        -d "{\"description\":\"$desc\",\"public\":false,\"files\":{\"$filename\":{\"content\":\"$line\"}}}" \
-        | (have jq && jq -r '.id' || sed -n 's/.*"id":"\([^"]*\)".*/\1/p'))"
-    fi
-    if [ -z "$gist_id" ]; then
-      say "⚠️ Failed to create gist; logging locally."
-      telemetry_local_append "$line"
-      return 0
-    fi
-    TELEM_GIST_ID="$gist_id"
-    # persist gist_id to config for next time
-    if have jq; then
-      tmp="$(mktemp)"; touch "$SR_TELEM_CFG"
-      jq --arg id "$gist_id" '.gist_id = $id' "$SR_TELEM_CFG" 2>/dev/null > "$tmp" || printf '{"gist_id":"%s"}' "$gist_id" > "$tmp"
-      mv "$tmp" "$SR_TELEM_CFG"
-    fi
-    say "🔗 Telemetry: created gist $gist_id"
-    return 0
-  fi
+  # Ensure gist exists (create if needed)
+  telemetry_ensure_gist || { telemetry_local_append "$line"; return 0; }
 
-  # Append: fetch existing, append, update
-  local content=""
+  # Fetch existing file content (if any), append, PATCH back
+  local new_content
   if have gh; then
-    content="$(GH_TOKEN="$(telemetry_token)" gh api "/gists/$gist_id" --jq ".files[\"$filename\"].content" 2>/dev/null || true)"
-    content="${content}${content:+$'\n'}$line"
-    GH_TOKEN="$(telemetry_token)" gh api -X PATCH "/gists/$gist_id" -F "files[$filename][content]=$content" >/dev/null 2>&1 || {
-      say "⚠️ gh PATCH failed; falling back to curl/local."
-      content=""  # force curl path
-    }
-    [ "${TELEM_VERBOSE}" = "1" ] && say "📡 Telemetry: appended to gist ${TELEM_GIST_ID} ($(telemetry_filename_for_today))"
-    [ -n "$content" ] && return 0
+    local existing
+    existing="$(GH_TOKEN="$tok" gh api "/gists/$TELEM_GIST_ID" --jq ".files[\"$filename\"].content" 2>/dev/null || true)"
+    if [ -n "$existing" ]; then
+      new_content="$existing"$'\n'"$line"
+    else
+      new_content="$line"
+    fi
+
+    GH_TOKEN="$tok" gh api -X PATCH "/gists/$TELEM_GIST_ID" \
+      -F "files[$filename][content]=$new_content" >/dev/null 2>&1 && return 0
+
+    say "⚠️  gh PATCH failed; trying curl…"
   fi
 
   # curl fallback
-  local tok; tok="$(telemetry_token)"
-  [ -z "$tok" ] && { say "⚠️ No token; falling back to local telemetry."; telemetry_local_append "$line"; return 0; }
+  # Build JSON with proper string escaping for 'content'
+  local payload
+  payload="$(python3 - <<'PY'
+import json,sys,os
+filename=os.environ["FILENAME"]
+content=sys.stdin.read()
+print(json.dumps({"files":{filename:{"content":content}}}))
+PY
+  )"
+  export FILENAME="$filename"
+  new_content="$(
+    # Get existing content via curl
+    curl -sS -H "Authorization: token $tok" -H "Accept: application/vnd.github+json" \
+      "$TELEM_UPLOAD_URL/$TELEM_GIST_ID" \
+    | (have jq && jq -r ".files[\"$filename\"].content // empty" || cat)
+  )"
+  [ -n "$new_content" ] && new_content="${new_content}"$'\n'"${line}" || new_content="$line"
 
-  # get existing content (if any)
-  local existing
-  existing="$(curl -sS -H "Authorization: token $tok" -H "Accept: application/vnd.github+json" \
-    "$TELEM_UPLOAD_URL/$gist_id" | (have jq && jq -r ".files[\"$filename\"].content // empty" || cat) )" || existing=""
-  local new_content
-  if [ -n "$existing" ]; then
-    new_content="${existing}"$'\n'"${line}"
-  else
-    new_content="$line"
-  fi
-
-  curl -sS -H "Authorization: token $tok" -H "Accept: application/vnd.github+json" \
-    -X PATCH "$TELEM_UPLOAD_URL/$gist_id" \
-    -d "{\"files\":{\"$filename\":{\"content\":$(printf '%s' "$new_content" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')}}}" >/dev/null 2>&1 \
-    || { say "⚠️ curl PATCH failed; writing locally."; telemetry_local_append "$line"; }
+  # Send PATCH with escaped content
+  printf '%s' "$new_content" | FILENAME="$filename" python3 - <<'PY' | curl -sS \
+    -H "Authorization: token '"$tok"'" -H "Accept: application/vnd.github+json" \
+    -X PATCH "$TELEM_UPLOAD_URL/'"$TELEM_GIST_ID"'" \
+    -d @- >/dev/null 2>&1 || { say "⚠️  curl PATCH failed; logging locally."; telemetry_local_append "$line"; exit 0; }
+import json,sys,os
+filename=os.environ["FILENAME"]
+content=sys.stdin.read()
+print(json.dumps({"files":{filename:{"content":content}}}))
+PY
 }
 
-# --- public API: send one event ---
+# --- public API ---
 telemetry_send_event() {
   telemetry_load_cfg
-  [ "${TELEM_ENABLED:-0}" = "1" ] || { say "ℹ️  Telemetry disabled."; return 0; }
+  if ! telemetry_enabled; then
+    say "ℹ️  Telemetry disabled."
+    return 0
+  fi
 
   local domain="$1" status="$2" duration="${3:-0}" version="${4:-}" extra="${5:-{}}"
   local jsonl; jsonl="$(telemetry_payload_json "$domain" "$status" "$duration" "$version" "$extra")"
