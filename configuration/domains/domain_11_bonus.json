@@ -1,6 +1,7 @@
 {
   "domain": "bonus",
   "title": "Bonus Tools (My Own Brews)",
+  "description": "Bonus domain with my own CLI tools published via Homebrew. These are opinionated helpers I maintain myself, grouped as must, should, and could.",
   "version": "1.0.1",
   "brew_tap_default": "raymonepping/tap",
   "brew_tap_for": {
@@ -8,90 +9,97 @@
     "packer": "hashicorp/tap",
     "vault": "hashicorp/tap"
   },
-  "tools": {
-    "must": [
-      {
-        "name": "commit-gh-cli",
-        "version": "v1.1.1",
-        "install": "brew install commit-gh-cli",
-        "rationale": "Automates the PR process with version bump, commit, changelog, push, and PR creation."
-      },
-      {
-        "name": "bump-version-cli",
-        "version": "v0.6.4",
-        "install": "brew install bump-version-cli",
-        "rationale": "Handles semantic versioning without sed headaches; supports patch, minor, major bumps."
-      },
-      {
-        "name": "sanity-check-cli",
-        "version": "v1.1.7",
-        "install": "brew install sanity-check-cli",
-        "rationale": "Runs all checks across Bash, Python, Node, and Terraform; outputs sanity_check.md."
-      },
-      {
-        "name": "folder-tree-cli",
-        "version": "v1.3.5",
-        "install": "brew install folder-tree-cli",
-        "rationale": "Generates clean folder trees in Markdown; perfect for docs and audits."
-      },
-      {
-        "name": "slim-container-cli",
-        "version": "v1.0.0",
-        "install": "brew install slim-container-cli",
-        "rationale": "Optimizes and scans Docker images with DockerSlim, Trivy, Grype, Dockle, and Dive."
-      },
-      {
-        "name": "radar-scan-cli",
-        "version": "v1.0.10",
-        "install": "brew install radar-scan-cli",
-        "rationale": "Scans folders or Docker images for secrets using Vault Radar; local or GitHub workflow."
-      },
-      {
-        "name": "brew-brain-cli",
-        "version": "v1.5.2",
-        "install": "brew install brew-brain-cli",
-        "rationale": "Tracks and compares expected vs installed brews; renders Markdown reports."
-      }
-    ],
-    "should": [
-      {
-        "name": "repository-audit-cli",
-        "version": "v1.0.0",
-        "install": "brew install repository-audit-cli",
-        "rationale": "Audits repos for insights, tag checks, and uncommitted changes."
-      },
-      {
-        "name": "self-doc-gen-cli",
-        "version": "v1.0.0",
-        "install": "brew install self-doc-gen-cli",
-        "rationale": "Automatically generates clean Markdown documentation from Bash scripts."
-      }
-    ],
-    "could": [
-      {
-        "name": "radar-love-cli",
-        "version": "v2.0.0",
-        "install": "brew install radar-love-cli",
-        "rationale": "Simulates secret leaks across multiple languages for Vault Radar demos."
-      },
-      {
-        "name": "export-docker-image-cli",
-        "version": "v1.0.1",
-        "install": "brew install export-docker-image-cli",
-        "rationale": "Lists and exports Docker images to JSON/Markdown; helps with hygiene and reporting."
-      },
-      {
-        "name": "repository-export-cli",
-        "version": "v1.0.11",
-        "install": "brew install repository-export-cli",
-        "rationale": "Exports all GitHub repos to Markdown, JSON, or CSV with stats and summaries."
-      },
-      {
-        "name": "repository-backup-cli",
-        "version": "v1.7.2",
-        "install": "brew install raymonepping/repository-backup-cli/repository-backup-cli",
-        "rationale": "Backs up GitHub repos with smart modular commands: backup, recover, prune, summary."
-      }      
-    ]
-  }
+  "tools": [
+    {
+      "name": "commit-gh-cli",
+      "level": "must",
+      "version": "v1.1.1",
+      "install": "brew install commit-gh-cli",
+      "rationale": "Automates the PR process with version bump, commit, changelog, push, and PR creation."
+    },
+    {
+      "name": "bump-version-cli",
+      "level": "must",
+      "version": "v0.6.4",
+      "install": "brew install bump-version-cli",
+      "rationale": "Handles semantic versioning without sed headaches; supports patch, minor, major bumps."
+    },
+    {
+      "name": "sanity-check-cli",
+      "level": "must",
+      "version": "v1.1.7",
+      "install": "brew install sanity-check-cli",
+      "rationale": "Runs all checks across Bash, Python, Node, and Terraform; outputs sanity_check.md."
+    },
+    {
+      "name": "folder-tree-cli",
+      "level": "must",
+      "version": "v1.3.5",
+      "install": "brew install folder-tree-cli",
+      "rationale": "Generates clean folder trees in Markdown; perfect for docs and audits."
+    },
+    {
+      "name": "slim-container-cli",
+      "level": "must",
+      "version": "v1.0.0",
+      "install": "brew install slim-container-cli",
+      "rationale": "Optimizes and scans Docker images with DockerSlim, Trivy, Grype, Dockle, and Dive."
+    },
+    {
+      "name": "radar-scan-cli",
+      "level": "must",
+      "version": "v1.0.10",
+      "install": "brew install radar-scan-cli",
+      "rationale": "Scans folders or Docker images for secrets using Vault Radar; local or GitHub workflow."
+    },
+    {
+      "name": "brew-brain-cli",
+      "level": "must",
+      "version": "v1.5.2",
+      "install": "brew install brew-brain-cli",
+      "rationale": "Tracks and compares expected vs installed brews; renders Markdown reports."
+    },
+    {
+      "name": "repository-audit-cli",
+      "level": "should",
+      "version": "v1.0.0",
+      "install": "brew install repository-audit-cli",
+      "rationale": "Audits repos for insights, tag checks, and uncommitted changes."
+    },
+    {
+      "name": "self-doc-gen-cli",
+      "level": "should",
+      "version": "v1.0.0",
+      "install": "brew install self-doc-gen-cli",
+      "rationale": "Automatically generates clean Markdown documentation from Bash scripts."
+    },
+    {
+      "name": "radar-love-cli",
+      "level": "could",
+      "version": "v2.0.0",
+      "install": "brew install radar-love-cli",
+      "rationale": "Simulates secret leaks across multiple languages for Vault Radar demos."
+    },
+    {
+      "name": "export-docker-image-cli",
+      "level": "could",
+      "version": "v1.0.1",
+      "install": "brew install export-docker-image-cli",
+      "rationale": "Lists and exports Docker images to JSON/Markdown; helps with hygiene and reporting."
+    },
+    {
+      "name": "repository-export-cli",
+      "level": "could",
+      "version": "v1.0.11",
+      "install": "brew install repository-export-cli",
+      "rationale": "Exports all GitHub repos to Markdown, JSON, or CSV with stats and summaries."
+    },
+    {
+      "name": "repository-backup-cli",
+      "level": "could",
+      "version": "v1.7.2",
+      "install": "brew install raymonepping/repository-backup-cli/repository-backup-cli",
+      "rationale": "Backs up GitHub repos with smart modular commands: backup, recover, prune, summary."
+    }
+  ]
 }

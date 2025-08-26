@@ -21,11 +21,6 @@
       "rationale": "TUI for managing Kubernetes resources interactively."
     },
     {
-      "name": "stern",
-      "level": "should",
-      "rationale": "Tail logs from multiple Kubernetes pods with label selectors."
-    },
-    {
       "name": "kubectx",
       "level": "could",
       "rationale": "Simplifies context switching between Kubernetes clusters."
