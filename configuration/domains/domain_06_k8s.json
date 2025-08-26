@@ -1,6 +1,7 @@
 {
   "domain": "k8s",
   "title": "Kubernetes (Local Dev)",
+  "description": "Kubernetes client tooling and cluster interaction UX.",
   "version": "1.0.0",
   "notes": "Cluster flavor is a one-of; the non-chosen one can be offered as SHOULD.",
   "tools": [

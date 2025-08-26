@@ -1,6 +1,7 @@
 {
   "domain": "code",
   "title": "Code & Dev Tools",
+  "description": "Editors, toolchain managers, and code helpers for local development.",
   "version": "1.0.0",
   "tools": [
     {

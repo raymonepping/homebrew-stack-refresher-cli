@@ -1,6 +1,7 @@
 {
   "domain": "ssh",
   "title": "SSH & Key Management",
+  "description": "SSH clients, agents, auditing, and smartcard support.",
   "version": "1.0.0",
   "tools": [
     {

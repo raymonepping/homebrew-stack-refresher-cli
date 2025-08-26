@@ -1,6 +1,7 @@
 {
   "domain": "terminal",
   "title": "Terminal & UX",
+  "description": "Terminal, shell, and UX tools for local productivity and navigation.",
   "version": "2.0.0",
   "tools": [
     {"name": "zsh", "level": "must", "rationale": "Primary shell; baseline for Zsh-based UX and plugins."},

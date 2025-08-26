@@ -1,77 +1,135 @@
-# 🛡️ Vault Radar Agent — Containerized
+# stack_refreshr 🌳
 
-A simple GitHub Action workflow using a containerized Vault Radar CLI to scan your codebase for secrets, sensitive data, and PII — no install required.
+> "Structure isn't boring – it's your first line of clarity." — *You (probably during a cleanup)*
 
-This repository demonstrates how to:
-- Run Vault Radar as a Docker container inside CI pipelines
-- Automatically fail builds on high/critical findings
-- Archive scan results as build artifacts
-- Output scan summary to the GitHub Actions UI
+[![brew install](https://img.shields.io/badge/brew--install-success-green?logo=homebrew)](https://github.com/raymonepping/homebrew-stack_refreshr)
+[![version](https://img.shields.io/badge/version-1.2.1-blue)](https://github.com/raymonepping/homebrew-stack_refreshr)
 
 ---
 
-## 🚀 How It Works
+## 🚀 Quickstart
 
-The included workflow (`.github/workflows/vault-radar.yml`) performs the following:
-
-1. ✅ **Checks out the repo**
-2. 🐳 **Runs the Vault Radar CLI container**
-3. 📊 **Scans the entire folder** for secrets and PII
-4. 📄 **Exports results to `scan_file.csv`**
-5. 📦 **Archives the scan as a GitHub Action artifact**
-6. 🔔 **Blocks the build on high/critical findings**
+```bash
+brew tap {{BREW_TAP}}
+brew install stack_refreshr
+stack_refreshr
 
 ---
+## 📂 Project Structure
 
-## 📁 Folder Structure
+```
+./
+├── assets/
+├── bin/
+│   └── stack_refreshr*
+├── completions/
+│   ├── _stack_refreshr
+│   ├── stack_refreshr.bash
+│   └── stack_refreshr.fish
+├── configuration/
+│   ├── domains/
+│   │   ├── domain_01_terminal.json
+│   │   ├── domain_02_ssh.json
+│   │   ├── domain_03_git.json
+│   │   ├── domain_04_code.json
+│   │   ├── domain_05_containers.json
+│   │   ├── domain_06_k8s.json
+│   │   ├── domain_07_secrets.json
+│   │   ├── domain_08_observability.json
+│   │   ├── domain_09_iac.json
+│   │   ├── domain_10_automation.json
+│   │   └── domain_11_bonus.json
+│   ├── .p10k.zsh
+│   └── aliases.json
+├── Formula/
+├── lib/
+│   ├── aliases.sh*
+│   ├── domain_01_terminal.sh*
+│   ├── domain_02_ssh.sh*
+│   ├── domain_03_git.sh*
+│   ├── domain_04_code.sh*
+│   ├── domain_05_containers.sh*
+│   ├── domain_06_k8s.sh*
+│   ├── domain_07_secrets.sh*
+│   ├── domain_08_observability.sh*
+│   ├── domain_09_iac.sh*
+│   ├── domain_10_automation.sh*
+│   ├── domain_11_bonus.sh*
+│   ├── domain_loader.sh*
+│   ├── helpers.sh*
+│   ├── install_completions.sh*
+│   ├── install.sh*
+│   ├── logger.sh*
+│   ├── polish.sh*
+│   ├── preflight.sh*
+│   ├── telemetry.sh*
+│   ├── timer.sh*
+│   └── ui.sh*
+├── state/
+│   ├── .base.version.state.json
+│   └── .brew_outdated.cache
+├── tpl/
+│   ├── readme_01_header.tpl
+│   ├── readme_02_project.tpl
+│   ├── readme_03_structure.tpl
+│   ├── readme_04_body.tpl
+│   ├── readme_05_quote.tpl
+│   ├── readme_06_article.tpl
+│   └── readme_07_footer.tpl
+├── .version
+├── FOLDER_TREE.md
+├── LICENSE
+├── README.md
+└── reload_version.sh*
 
-```text
-.
-├── .github/
-│   └── workflows/
-│       └── vault-radar.yml   # GitHub Actions workflow
-├── findings/
-│   └── scan_file.csv         # Vault Radar scan results (if present)
-├── README.md                 # You're here!
-└── LICENSE                   # GPLv3 License
+10 directories, 53 files
 ```
 
 ---
 
-## 🧪 Example Output
+## 🧭 What Is This?
 
-Scan summary is written to the GitHub Actions UI:
+stack_refreshr is a Homebrew-installable, wizard-powered CLI that helps you refresh, audit, and validate your developer stack. It’s especially useful for:
 
-ℹ️ Low severity findings detected
-⚠️ Medium severity findings detected
-❌ High or critical severity findings detected. Blocking the build.
-📝 Scan results saved to findings/scan_file.csv
-GitHub will also show annotations inline if medium/high findings are detected.
+- Developers and DevOps engineers maintaining complex local setups
+- Teams needing consistent SSH, Git, and tooling refreshes
+- Keeping an audit log of preflight checks, configs, and state
 
 ---
 
-## 🔐 Secrets Required
+## 🔑 Key Features
 
-To authenticate with HCP Vault Radar, add the following to your repository secrets:
-
-- HCP_CLIENT_ID
-- HCP_CLIENT_SECRET
-- HCP_PROJECT_ID
-
----
-
-## 🧰 Usage
-Fork this repo or copy the .github/workflows/vault-radar.yml into your own repo, and add your secrets via GitHub settings.
-
-Want to change severity thresholds? Just update the grep logic in the workflow!
-
-## 📝 License
-
-This project is licensed under GPLv3.
+- Run preflight checks for OS, tools, Homebrew, network, and dependencies  
+- Interactive UX with both arrow-key and numeric input  
+- Refresh SSH keys and Git configuration  
+- Track stack state with optional telemetry  
+- Designed for reproducibility, team sharing, and CI/CD integration  
 
 ---
 
-🤖 Powered By;
-HashiCorp Vault Radar + GitHub Actions + Containerization = effortless security hygiene.
+### Run a full refresh
 
-> Because automation should automate itself.
+```bash
+stack_refreshr
+## 🧠 Philosophy
+
+stack_refreshr 
+
+> Some might say that sunshine follows thunder  
+> Go and tell it to the man who cannot shine  
+>
+> Some might say that we should never ponder  
+> On our thoughts today ‘cos they hold sway over time
+
+<!-- — Oasis, "Some Might Say" -->
+
+---
+
+## 📘 Read the Full Medium.com article
+
+📖 [Article](..) 
+
+---
+
+© 2025 Your Name  
+🧠 Powered by self_docs.sh — 🌐 Works locally, CI/CD, and via Brew

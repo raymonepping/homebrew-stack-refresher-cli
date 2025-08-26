@@ -1,6 +1,7 @@
 {
   "domain": "automation",
   "title": "Automation & Scheduling",
+  "description": "Local automation, build orchestrators, and CLI glue.",
   "version": "1.0.0",
   "tools": [
     {

@@ -1,6 +1,7 @@
 {
   "domain": "git",
   "title": "Git & Source Control",
+  "description": "Source control and developer Git workflows.",
   "version": "1.0.0",
   "tools": [
     {

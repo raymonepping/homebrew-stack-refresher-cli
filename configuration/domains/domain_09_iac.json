@@ -1,6 +1,7 @@
 {
   "domain": "iac",
   "title": "Infrastructure as Code",
+  "description": "Infrastructure as Code authoring, validation, and builds.",
   "version": "1.0.0",
   "brew_tap_for": {
     "terraform": "hashicorp/tap",

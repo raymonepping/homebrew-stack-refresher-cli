@@ -13,11 +13,13 @@ sr_log_json(){
     "$(date -Iseconds)" "$1" "$2" "$3" "$4" >> "$SR_LOGS/install.json"
 }
 
-# Ensure a tap exists before installing from it
+# Ensure a tap exists like raymonepping/commit-gh-cli
 _sr_ensure_tap() {
   local tap="$1"
   [ -z "$tap" ] && return 0
-  brew tap | grep -q "^${tap}\$" || brew tap "$tap" >/dev/null
+  if ! brew tap | grep -q "^${tap}\$"; then
+    brew tap "$tap"    # Homebrew derives the correct repo: github.com/<owner>/homebrew-<repo>
+  fi
 }
 
 # Return installed tap for a formula, or empty if not installed
@@ -410,21 +412,21 @@ sr_tool_brew_tuple() {
     at)                echo "at formula" ;;
     tmux-resurrect)    echo "tmux-resurrect formula" ;;
 
-    # Domain 11 — Bonus (your tap)
-    commit-gh-cli)           echo "raymonepping/tap/commit-gh-cli formula" ;;
-    bump-version-cli)        echo "raymonepping/tap/bump-version-cli formula" ;;
-    sanity-check-cli)        echo "raymonepping/tap/sanity-check-cli formula" ;;
-    folder-tree-cli)         echo "raymonepping/tap/folder-tree-cli formula" ;;
-    slim-container-cli)      echo "raymonepping/tap/slim-container-cli formula" ;;
-    radar-scan-cli)          echo "raymonepping/tap/radar-scan-cli formula" ;;
-    export-docker-image-cli) echo "raymonepping/tap/export-docker-image-cli formula" ;;
-    brew-brain-cli)          echo "raymonepping/tap/brew-brain-cli formula" ;;
-    repository-export-cli)   echo "raymonepping/tap/repository-export-cli formula" ;;
-    repository-backup-cli)   echo "raymonepping/tap/repository-backup-cli formula" ;;
-    repository-audit-cli)    echo "raymonepping/tap/repository-audit-cli formula" ;;
-    self-doc-gen-cli)        echo "raymonepping/tap/self-doc-gen-cli formula" ;;
-    radar-love-cli)          echo "raymonepping/tap/radar-love-cli formula" ;;
-
+    # Domain 11 — Bonus
+    commit-gh-cli)           echo "raymonepping/commit-gh-cli/commit-gh-cli formula" ;;
+    bump-version-cli)        echo "raymonepping/bump-version-cli/bump-version-cli formula" ;;
+    sanity-check-cli)        echo "raymonepping/sanity-check-cli/sanity-check-cli formula" ;;
+    folder-tree-cli)         echo "raymonepping/folder-tree-cli/folder-tree-cli formula" ;;
+    slim-container-cli)      echo "raymonepping/slim-container-cli/slim-container-cli formula" ;;
+    radar-scan-cli)          echo "raymonepping/radar-scan-cli/radar-scan-cli formula" ;;
+    export-docker-image-cli) echo "raymonepping/export-docker-image-cli/export-docker-image-cli formula" ;;
+    brew-brain-cli)          echo "raymonepping/brew-brain-cli/brew-brain-cli formula" ;;
+    repository-export-cli)   echo "raymonepping/repository-export-cli/repository-export-cli formula" ;;
+    repository-backup-cli)   echo "raymonepping/repository-backup-cli/repository-backup-cli formula" ;;
+    repository-audit-cli)    echo "raymonepping/repository-audit-cli/repository-audit-cli formula" ;;
+    self-doc-gen-cli)        echo "raymonepping/self-doc-gen-cli/self-doc-gen-cli formula" ;;
+    radar-love-cli)          echo "raymonepping/radar-love-cli/radar-love-cli formula" ;;
+  
     # Networking & API extras
     curlie)            echo "curlie formula" ;;
     nmap)              echo "nmap formula" ;;

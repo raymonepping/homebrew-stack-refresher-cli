@@ -3,7 +3,7 @@
     "installed": true,
     "version": "5.9",
     "source": "brew",
-    "last_checked": "2025-08-21T12:45:31Z",
+    "last_checked": "2025-08-21T13:38:12Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -11,17 +11,17 @@
   "tmux": {
     "installed": true,
     "version": "3.5a",
-    "source": "path",
-    "last_checked": "2025-08-21T12:45:32Z",
+    "source": "brew",
+    "last_checked": "2025-08-21T13:38:15Z",
     "domains": [
       "Terminal & UX"
     ]
   },
   "bat": {
     "installed": true,
-    "version": "0.25.0",
-    "source": "path",
-    "last_checked": "2025-08-21T12:45:32Z",
+    "version": "0.25.0_1",
+    "source": "brew",
+    "last_checked": "2025-08-21T13:38:18Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -29,8 +29,8 @@
   "ripgrep": {
     "installed": true,
     "version": "14.1.1",
-    "source": "path",
-    "last_checked": "2025-08-21T12:45:37Z",
+    "source": "brew",
+    "last_checked": "2025-08-21T13:38:25Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -38,8 +38,8 @@
   "eza": {
     "installed": true,
     "version": "0.23.0",
-    "source": "path",
-    "last_checked": "2025-08-21T12:45:37Z",
+    "source": "brew",
+    "last_checked": "2025-08-21T13:38:27Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -47,8 +47,8 @@
   "fzf": {
     "installed": true,
     "version": "0.65.1",
-    "source": "path",
-    "last_checked": "2025-08-21T12:45:37Z",
+    "source": "brew",
+    "last_checked": "2025-08-21T13:38:30Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -56,8 +56,8 @@
   "powerlevel10k": {
     "installed": true,
     "version": "1.20.0",
-    "source": "path",
-    "last_checked": "2025-08-21T12:45:44Z",
+    "source": "brew",
+    "last_checked": "2025-08-21T13:38:37Z",
     "domains": [
       "Terminal & UX"
     ]
@@ -454,6 +454,123 @@
     "version": "",
     "source": "path",
     "last_checked": "2025-08-21T13:05:29Z",
+    "domains": [
+      "Bonus Tools (My Own Brews)"
+    ]
+  },
+  "commit-gh-cli": {
+    "installed": false,
+    "version": "",
+    "source": "brew",
+    "last_checked": "2025-08-21T14:21:41Z",
+    "domains": [
+      "Bonus Tools (My Own Brews)"
+    ]
+  },
+  "bump-version-cli": {
+    "installed": false,
+    "version": "",
+    "source": "brew",
+    "last_checked": "2025-08-21T14:21:47Z",
+    "domains": [
+      "Bonus Tools (My Own Brews)"
+    ]
+  },
+  "sanity-check-cli": {
+    "installed": false,
+    "version": "",
+    "source": "brew",
+    "last_checked": "2025-08-21T14:21:52Z",
+    "domains": [
+      "Bonus Tools (My Own Brews)"
+    ]
+  },
+  "folder-tree-cli": {
+    "installed": false,
+    "version": "",
+    "source": "brew",
+    "last_checked": "2025-08-21T14:21:58Z",
+    "domains": [
+      "Bonus Tools (My Own Brews)"
+    ]
+  },
+  "slim-container-cli": {
+    "installed": false,
+    "version": "",
+    "source": "brew",
+    "last_checked": "2025-08-21T14:22:03Z",
+    "domains": [
+      "Bonus Tools (My Own Brews)"
+    ]
+  },
+  "radar-scan-cli": {
+    "installed": false,
+    "version": "",
+    "source": "brew",
+    "last_checked": "2025-08-21T14:22:09Z",
+    "domains": [
+      "Bonus Tools (My Own Brews)"
+    ]
+  },
+  "brew-brain-cli": {
+    "installed": false,
+    "version": "",
+    "source": "brew",
+    "last_checked": "2025-08-21T14:22:14Z",
+    "domains": [
+      "Bonus Tools (My Own Brews)"
+    ]
+  },
+  "repository-audit-cli": {
+    "installed": false,
+    "version": "",
+    "source": "brew",
+    "last_checked": "2025-08-21T14:22:42Z",
+    "domains": [
+      "Bonus Tools (My Own Brews)"
+    ]
+  },
+  "radar-love-cli": {
+    "installed": false,
+    "version": "",
+    "source": "brew",
+    "last_checked": "2025-08-21T14:22:59Z",
+    "domains": [
+      "Bonus Tools (My Own Brews)"
+    ]
+  },
+  "export-docker-image-cli": {
+    "installed": false,
+    "version": "",
+    "source": "brew",
+    "last_checked": "2025-08-21T14:23:04Z",
+    "domains": [
+      "Bonus Tools (My Own Brews)"
+    ]
+  },
+  "repository-export-cli": {
+    "installed": false,
+    "version": "",
+    "source": "brew",
+    "last_checked": "2025-08-21T14:23:10Z",
+    "domains": [
+      "Bonus Tools (My Own Brews)"
+    ]
+  },
+  "repository-backup-cli": {
+    "installed": false,
+    "version": "",
+    "source": "brew",
+    "last_checked": "2025-08-21T14:23:15Z",
+    "domains": [
+      "Bonus Tools (My Own Brews)"
+    ]
+  },
+  "self-doc-gen-cli": {
+    "installed": false,
+    "version": "",
+    "source": "brew",
+    "last_checked": "2025-08-21T14:22:48Z",
     "domains": [
       "Bonus Tools (My Own Brews)"
     ]

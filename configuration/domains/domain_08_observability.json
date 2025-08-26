@@ -1,6 +1,7 @@
 {
   "domain": "observability",
   "title": "Observability & Logs",
+  "description": "Local system insight, metrics, and log triage tools.",
   "version": "1.0.0",
   "tools": [
     {
