@@ -1,4 +1,4 @@
-class StackRefreshr < Formula
+class StackRefrehsrCli < Formula
   desc "Bash-powered stack refresher with domains, docs generation, and telemetry"
   homepage "https://github.com/raymonepping/stack-refresher-cli"
   url "https://github.com/raymonepping/homebrew-stack-refresher-cli/archive/refs/tags/v1.0.0.tar.gz"
