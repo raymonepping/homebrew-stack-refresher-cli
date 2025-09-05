@@ -1,6 +1,6 @@
 ## 🧭 What Is This?
 
-{{CLI_NAME}} is a Homebrew-installable, wizard-powered CLI that helps you refresh, audit, and validate your developer stack. It’s especially useful for:
+{{CLI_NAME}} is a Homebrew-installable, wizard-powered CLI that helps you refresh, audit, and validate your developer stack. Its especially useful for:
 
 - Developers and DevOps engineers maintaining complex local setups
 - Teams needing consistent SSH, Git, and tooling refreshes
@@ -22,6 +22,7 @@
 
 ```bash
 {{CLI_NAME}}
+```
 
 ---
 

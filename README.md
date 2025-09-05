@@ -13,6 +13,7 @@
 brew tap {{BREW_TAP}}
 brew install stack_refreshr
 stack_refreshr
+```
 
 ---
 
@@ -94,7 +95,7 @@ stack_refreshr
 
 ## 🧭 What Is This?
 
-stack_refreshr is a Homebrew-installable, wizard-powered CLI that helps you refresh, audit, and validate your developer stack. It’s especially useful for:
+stack_refreshr is a Homebrew-installable, wizard-powered CLI that helps you refresh, audit, and validate your developer stack. Its especially useful for:
 
 - Developers and DevOps engineers maintaining complex local setups
 - Teams needing consistent SSH, Git, and tooling refreshes
@@ -116,6 +117,7 @@ stack_refreshr is a Homebrew-installable, wizard-powered CLI that helps you refr
 
 ```bash
 stack_refreshr
+```
 
 ---
 
