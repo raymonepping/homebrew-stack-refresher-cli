@@ -64,9 +64,27 @@ Flags:
   --dry-run            Show what would happen, don't install
   --verbose            Print underlying commands
   --sequential         Disable parallel installs
+  --generate-table     Build the domains overview and write ./table.md
   --enable-telemetry   Enable telemetry for this run (can also be enabled in config)
   --telemetry-config   Path to telemetry.json (default: ~/.config/stack_refreshr/telemetry.json)
 EOF
+}
+
+# Build domain table wrapper
+sr_generate_table() {
+  local script="$SR_CONF/domains/build_table.sh"
+  local out="$SR_ROOT/table.md"
+
+  if [ ! -f "$script" ]; then
+    warn "build_table.sh not found at: $script"
+    return 1
+  fi
+  if [ ! -x "$script" ]; then
+    # run via bash if not executable
+    bash "$script" "$SR_ROOT" "$out" --details true
+  else
+    "$script" "$SR_ROOT" "$out" --details true
+  fi
 }
 
 # Parse args (includes telemetry subcommands)
@@ -77,6 +95,15 @@ while [ $# -gt 0 ]; do
     --verbose) VERBOSE=1 ;;
     --sequential) PARALLEL=0 ;;
     --enable-telemetry) TELEM_ENABLED=1 ;;
+    --generate-table)
+      if sr_generate_table; then
+        echo "✅ Generated: table.md"
+        exit 0
+      else
+        echo "❌ Failed to generate table.md" >&2
+        exit 1
+      fi
+    ;;
     --telemetry-config) shift; SR_TELEM_CFG="$1" ;;
     telemetry)
       shift

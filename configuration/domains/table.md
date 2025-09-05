@@ -23,13 +23,18 @@ Terminal, shell, and UX tools for local productivity and navigation.
 | should | atuin | Shell history with sync and search. |
 | should | bash-completion | Programmable completion for bash. |
 | should | fd | Modern 'find' with sane defaults and speed. |
+| should | less (+F) | Built-in pager with follow mode; a more flexible 'tail -f'. |
+| should | lnav | Logfile navigator with SQL queries, formats, and interactive filtering. |
 | should | thefuck | Corrects mistyped console commands. |
 | should | tldr | Simplified man pages with examples. |
 | should | zoxide | Smarter 'cd' based on frecency. |
 | could | dust | Disk usage viewer, like du but better. |
 | could | figlet | ASCII banners for fun or section headers. |
+| could | font-meslo-for-powerlevel10k | Meslo font for Powerlevel10k theme. |
+| could | grc | Generic colorizer; prettifies tail and other commands. |
 | could | gum | Pretty TUI prompts; enhances UX if available. |
 | could | lolcat | Rainbow styling for fun, optional flair. |
+| could | multitail | Tail multiple logs with color and split views. |
 | could | procs | Modern replacement for ps. |
 | could | raycast | macOS launcher to trigger scripts quickly. |
 | could | starship | Cross-shell prompt written in Rust. |

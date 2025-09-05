@@ -18,8 +18,12 @@
     {"name": "thefuck", "level": "should", "rationale": "Corrects mistyped console commands."},
     {"name": "tldr", "level": "should", "rationale": "Simplified man pages with examples."},
     {"name": "bash-completion", "level": "should", "rationale": "Programmable completion for bash."},
+    {"name": "less (+F)", "level": "should", "rationale": "Built-in pager with follow mode; a more flexible 'tail -f'."},
+    {"name": "lnav", "level": "should", "rationale": "Logfile navigator with SQL queries, formats, and interactive filtering."},
+
 
     {"name": "raycast", "level": "could", "rationale": "macOS launcher to trigger scripts quickly."},
+    {"name": "font-meslo-for-powerlevel10k", "level": "could", "rationale": "Meslo font for Powerlevel10k theme."},
     {"name": "warp", "level": "could", "rationale": "Next-gen terminal (macOS)."},
     {"name": "gum", "level": "could", "rationale": "Pretty TUI prompts; enhances UX if available."},
     {"name": "figlet", "level": "could", "rationale": "ASCII banners for fun or section headers."},
@@ -28,6 +32,8 @@
     {"name": "procs", "level": "could", "rationale": "Modern replacement for ps."},
     {"name": "starship", "level": "could", "rationale": "Cross-shell prompt written in Rust."},
     {"name": "zsh-autosuggestions", "level": "could", "rationale": "Suggests completions as you type in Zsh."},
-    {"name": "zsh-syntax-highlighting", "level": "could", "rationale": "Syntax highlighting for Zsh."}
+    {"name": "zsh-syntax-highlighting", "level": "could", "rationale": "Syntax highlighting for Zsh."},
+    {"name": "multitail", "level": "could", "rationale": "Tail multiple logs with color and split views."},
+    {"name": "grc", "level": "could", "rationale": "Generic colorizer; prettifies tail and other commands."}    
   ]
 }
