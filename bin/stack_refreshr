@@ -72,19 +72,37 @@ EOF
 
 # Build domain table wrapper
 sr_generate_table() {
-  local script="$SR_CONF/domains/build_table.sh"
-  local out="$SR_ROOT/table.md"
+  local domains_dir="$SR_CONF/domains"
+  local script="$domains_dir/build_table.sh"
+  local out="$domains_dir/table.md"
 
+  if [ ! -d "$domains_dir" ]; then
+    warn "Domains directory not found: $domains_dir"
+    return 1
+  fi
   if [ ! -f "$script" ]; then
     warn "build_table.sh not found at: $script"
     return 1
   fi
-  if [ ! -x "$script" ]; then
-    # run via bash if not executable
-    bash "$script" "$SR_ROOT" "$out" --details true
-  else
-    "$script" "$SR_ROOT" "$out" --details true
+
+  # Run from the domains directory so '.' resolves to the JSON location
+  local rc=0
+  (
+    cd "$domains_dir"
+    if [ -x "$script" ]; then
+      "$script" . "$out" --details true
+    else
+      bash "$script" . "$out" --details true
+    fi
+  ) || rc=$?
+
+  # Success if the file exists and is non-empty. Print path so caller can echo once.
+  if [ -s "$out" ]; then
+    printf '%s\n' "$out"
+    return 0
   fi
+
+  return "$rc"
 }
 
 # Parse args (includes telemetry subcommands)
@@ -96,8 +114,8 @@ while [ $# -gt 0 ]; do
     --sequential) PARALLEL=0 ;;
     --enable-telemetry) TELEM_ENABLED=1 ;;
     --generate-table)
-      if sr_generate_table; then
-        echo "✅ Generated: table.md"
+      if out_path="$(sr_generate_table)"; then
+        echo "✅ table.md ready at: $out_path"
         exit 0
       else
         echo "❌ Failed to generate table.md" >&2

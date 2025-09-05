@@ -22,3 +22,10 @@
 
 ```bash
 {{CLI_NAME}}
+
+---
+
+### Domain Overview Table
+See the latest overview in [table.md](./configuration/domains/table.md).
+
+---

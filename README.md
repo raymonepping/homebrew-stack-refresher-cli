@@ -15,6 +15,7 @@ brew install stack_refreshr
 stack_refreshr
 
 ---
+
 ## 📂 Project Structure
 
 ```
@@ -28,6 +29,7 @@ stack_refreshr
 │   └── stack_refreshr.fish
 ├── configuration/
 │   ├── domains/
+│   │   ├── build_table.sh*
 │   │   ├── domain_01_terminal.json
 │   │   ├── domain_02_ssh.json
 │   │   ├── domain_03_git.json
@@ -38,7 +40,8 @@ stack_refreshr
 │   │   ├── domain_08_observability.json
 │   │   ├── domain_09_iac.json
 │   │   ├── domain_10_automation.json
-│   │   └── domain_11_bonus.json
+│   │   ├── domain_11_bonus.json
+│   │   └── table.md
 │   ├── .p10k.zsh
 │   └── aliases.json
 ├── Formula/
@@ -76,13 +79,15 @@ stack_refreshr
 │   ├── readme_05_quote.tpl
 │   ├── readme_06_article.tpl
 │   └── readme_07_footer.tpl
+├── .backup.yaml
+├── .backupignore
 ├── .version
 ├── FOLDER_TREE.md
 ├── LICENSE
 ├── README.md
 └── reload_version.sh*
 
-10 directories, 53 files
+10 directories, 57 files
 ```
 
 ---
@@ -99,11 +104,11 @@ stack_refreshr is a Homebrew-installable, wizard-powered CLI that helps you refr
 
 ## 🔑 Key Features
 
-- Run preflight checks for OS, tools, Homebrew, network, and dependencies  
-- Interactive UX with both arrow-key and numeric input  
-- Refresh SSH keys and Git configuration  
-- Track stack state with optional telemetry  
-- Designed for reproducibility, team sharing, and CI/CD integration  
+- Run preflight checks for OS, tools, Homebrew, network, and dependencies
+- Interactive UX with both arrow-key and numeric input
+- Refresh SSH keys and Git configuration
+- Track stack state with optional telemetry
+- Designed for reproducibility, team sharing, and CI/CD integration
 
 ---
 
@@ -111,6 +116,13 @@ stack_refreshr is a Homebrew-installable, wizard-powered CLI that helps you refr
 
 ```bash
 stack_refreshr
+
+---
+
+### Domain Overview Table
+See the latest overview in [table.md](./configuration/domains/table.md).
+
+---
 ## 🧠 Philosophy
 
 stack_refreshr 
