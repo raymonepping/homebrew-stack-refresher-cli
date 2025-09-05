@@ -45,6 +45,7 @@ if [ "${1:-}" = "__complete" ]; then
 10:Automation & Scheduling
 11:Bonus Tools (CLI Suite)
 A:Install ALL MUST (all domains)
+B:Refresh Docs (table + README)
 Q:Quit
 OUT
       ;;
@@ -64,10 +65,56 @@ Flags:
   --dry-run            Show what would happen, don't install
   --verbose            Print underlying commands
   --sequential         Disable parallel installs
-  --generate-table     Build the domains overview and write ./table.md
+  --generate-table     Build the domains overview and write configuration/domains/table.md
+  --generate-readme    Generate README.md at repo root using ./tpl templates
+  --refresh-docs       Run table first, then README, for a full docs refresh
   --enable-telemetry   Enable telemetry for this run (can also be enabled in config)
   --telemetry-config   Path to telemetry.json (default: ~/.config/stack_refreshr/telemetry.json)
 EOF
+}
+
+# Refresh docs (table first, then README)
+sr_refresh_docs() {
+  echo "📚 Refreshing docs…"
+
+  # 1) Build table inside configuration/domains
+  local table_out
+  if table_out="$(sr_generate_table)"; then
+    echo "✅ Table updated at: $table_out"
+  else
+    echo "❌ Failed to generate table.md" >&2
+    return 1
+  fi
+
+  # 2) Rebuild README at repo root
+  if sr_generate_readme; then
+    echo "✅ Docs refreshed"
+    return 0
+  else
+    echo "❌ Failed to generate README.md" >&2
+    return 1
+  fi
+}
+
+# Build README wrapper
+sr_generate_readme() {
+  local out="$SR_ROOT/README.md"
+  local tpl_dir="$SR_ROOT/tpl"
+  local bin_file="$SR_ROOT/bin/stack_refreshr"
+
+  if ! have self_doc; then
+    warn "self_doc not found in PATH. Please install it first."
+    return 1
+  fi
+
+  echo "📝 Generating README.md from templates…"
+  if self_doc -t "$tpl_dir" -f "$bin_file" -d "$SR_ROOT" -o "$out"; then
+    echo "✅ README.md ready at: $out"
+    return 0
+  else
+    echo "❌ Failed to generate README.md" >&2
+    return 1
+  fi
 }
 
 # Build domain table wrapper
@@ -113,6 +160,13 @@ while [ $# -gt 0 ]; do
     --verbose) VERBOSE=1 ;;
     --sequential) PARALLEL=0 ;;
     --enable-telemetry) TELEM_ENABLED=1 ;;
+    --refresh-docs)
+      if sr_refresh_docs; then
+        exit 0
+      else
+        exit 1
+      fi
+    ;;    
     --generate-table)
       if out_path="$(sr_generate_table)"; then
         echo "✅ table.md ready at: $out_path"
@@ -122,6 +176,13 @@ while [ $# -gt 0 ]; do
         exit 1
       fi
     ;;
+    --generate-readme)
+      if sr_generate_readme; then
+        exit 0
+      else
+        exit 1
+      fi
+      ;;    
     --telemetry-config) shift; SR_TELEM_CFG="$1" ;;
     telemetry)
       shift
@@ -270,12 +331,22 @@ while true; do
   choice="$(sr_menu_main || true)"
   [ -n "${choice:-}" ] || continue
 
+  # normalize quick keys from user input
+  case "$choice" in
+    a|A) choice="A" ;;
+    b|B) choice="B" ;;
+    q|Q) choice="Q" ;;
+  esac
+
   case "${choice^^}" in
     [1-9]|10|11)
       sr_run_domain "$choice" "full"
       ;;
     A)
       sr_install_all_must
+      ;;
+    B)
+      sr_refresh_docs
       ;;
     Q)
       printf "👋 Bye!\n"; exit 0

@@ -144,8 +144,9 @@ _sr_build_menu_items() {
   for i in {1..11}; do
     printf "  %2s: %s %s\n" "$i" "$(_sr_domain_icon "$i")" "$(_sr_domain_label "$i")"
   done
-  printf '%s\n' "  A: Install ALL MUST (all domains)"
-  printf '%s\n' "  Q: Quit"
+  printf '%s\n' "   A: 🏬 Install ALL MUST (all domains)"
+  printf '%s\n' "   B: 📚 Refresh Docs (table + README)"
+  printf '%s\n' "   Q: Quit"
 }
 
 # ---------------------------
@@ -240,6 +241,7 @@ _sr_map_quick_choice() {
     7)  echo "7" ;;  8)  echo "8" ;;  9)  echo "9" ;;
     10) echo "10" ;; 11) echo "11" ;;
     A|a) echo "A" ;;
+    B|b) echo "B" ;;
     Q|q) echo "Q" ;;
     *)   echo "" ;;
   esac
@@ -261,17 +263,19 @@ sr_menu_main() {
 
   # Print the menu (to stderr)
   for it in "${items[@]:0:11}"; do say "$it"; done
-  say "${items[11]}"
-  say "${items[12]}"
+  say "${items[11]}"   # A
+  say "${items[12]}"   # B
+  say "${items[13]}"   # Q
 
   # Fast single-key path when gum is present (nice UX)
   local picked="" ans=""
   if [ "$UI_MODE" = "gum" ]; then
-    say "Use ↑/↓ then Enter, or press [1–11/A/Q] for quick select…"
+    say "Use ↑/↓ then Enter, or press [1–11/A/B/Q] for quick select…"
     IFS= read -r -n1 -s ans </dev/tty || ans=""
     case "$ans" in
       [1-9]) picked="$(_sr_map_quick_choice "$ans")" ;;
-      A|a|Q|q) picked="$(_sr_map_quick_choice "$ans")" ;;
+      A|a|B|b) picked="$(_sr_map_quick_choice "$ans")" ;;
+      Q|Q|q) picked="$(_sr_map_quick_choice "$ans")" ;;
       0)
         IFS= read -r -n1 -s ans2 </dev/tty || ans2=""
         case "${ans}${ans2}" in 10) picked="10" ;; 11) picked="11" ;; esac
@@ -286,14 +290,15 @@ sr_menu_main() {
   fi
 
   # Reduce full line to token
-  if [ -n "$picked" ] && [[ "$picked" != [0-9AQaq]* ]]; then
+  if [ -n "$picked" ] && [[ "$picked" != [0-9ABQabq]* ]]; then
     picked="$(printf '%s' "$picked" | _strip_ansi | tr -d '\r')"
     picked="$(_trim "$picked")"
     case "$picked" in
       [0-9]*:*) picked="${picked%%:*}" ;;
       "A:"*)    picked="A" ;;
+      "B:"*)    picked="B" ;;
       "Q:"*)    picked="Q" ;;
-      "A"|"Q")  ;;
+      "A"|"B"|"Q") ;;
       *) [[ "$picked" =~ ^([0-9]+) ]] && picked="${BASH_REMATCH[1]}" ;;
     esac
   fi
