@@ -1,16 +1,19 @@
 class StackRefreshrCli < Formula
   desc "✨ Bash-powered stack refresher with domains, docs generation, and telemetry"
   homepage "https://github.com/raymonepping/homebrew-stack-refresher-cli"
-  url "https://github.com/raymonepping/homebrew-stack-refresher-cli/archive/refs/tags/v1.0.0.tar.gz"
-  sha256 "c8891dbce241044fa40727cf777f62f9c86ef5de18540ffab0cbea598c96ff10"
+  url "https://github.com/raymonepping/homebrew-stack-refresher-cli/archive/refs/tags/v1.0.1.tar.gz"
+  sha256 "4a3405f238e6d601c4cbcac86fa14090ee69b5259cf7f5d1648fd258dec22fe2"
   license "MIT"
-  version "1.0.0"
+  version "1.0.1"
 
   depends_on "bash"
   depends_on "jq"
 
   def install
     libexec.install Dir["*"]
+
+    # Ensure all scripts in libexec/bin are executable
+    Dir["#{libexec}/bin/*"].each { |f| chmod 0755, f }
 
     (bin/"stack_refreshr").write <<~SH
       #!/usr/bin/env bash
