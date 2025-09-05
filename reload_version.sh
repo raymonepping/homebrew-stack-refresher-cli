@@ -106,19 +106,19 @@ TARBALL_URL="${SOURCE_URL}/archive/refs/tags/${TAG}.tar.gz"
 say "⏳ Waiting ${SLEEP_DURATION}s for GitHub to process tag..."
 sleep "${SLEEP_DURATION}"
 
-# Wait for tarball availability
+# ---------- Robust tarball availability check (follow redirects, fail fast)
 say "🔎 Checking tarball availability at:"
 say "    ${TARBALL_URL}"
 attempt=0
-until curl --head --fail --silent "$TARBALL_URL" >/dev/null || (( attempt >= 10 )); do
+until command curl -sSfL -o /dev/null "$TARBALL_URL" >/dev/null 2>&1 || (( attempt >= 10 )); do
   attempt=$((attempt + 1))
   echo "⏳ Tarball not ready yet. Retrying (${attempt}/10)..."
   sleep 2
 done
-curl --head --fail --silent "$TARBALL_URL" >/dev/null || die "Tarball still not available: ${TARBALL_URL}"
+command curl -sSfL -o /dev/null "$TARBALL_URL" >/dev/null 2>&1 || die "Tarball still not available: ${TARBALL_URL}"
 
-# Compute SHA256
-SHA256="$(curl -sL "$TARBALL_URL" | shasum -a 256 | awk '{print $1}')"
+# Compute SHA256 (same flags)
+SHA256="$(command curl -sSL "$TARBALL_URL" | shasum -a 256 | awk '{print $1}')"
 say "🔐 SHA256: ${SHA256}"
 
 # Prepare tap working copy (clone to temp if needed)
@@ -184,9 +184,18 @@ if [[ "$SKIP_REINSTALL" == true ]]; then
   say "⏭️  Skipping reinstall as requested (--skip-reinstall)."
 else
   say "🍺 Reinstalling via Homebrew from tap…"
-  brew update >/dev/null || true
-  brew uninstall --force "${FORMULA_BASENAME}" >/dev/null 2>&1 || true
-  brew install "${TAP_SLUG}/${FORMULA_BASENAME}"
+
+  # ---------- Fix a known-bad tap remote (SSH to localhost:2222) without untapping
+  if TAP_DIR="$(brew --repo hashicorp/security 2>/dev/null)"; then
+    if [ -f "$TAP_DIR/.git/config" ] && grep -q 'localhost:2222' "$TAP_DIR/.git/config"; then
+      say "🔧 Fixing hashicorp/security tap remote (switching to HTTPS)…"
+      git -C "$TAP_DIR" remote set-url origin https://github.com/hashicorp/homebrew-security.git || true
+      git -C "$TAP_DIR" fetch origin || true
+    fi
+  fi
+
+  # Optional: quiet install (no auto-update)
+  HOMEBREW_NO_AUTO_UPDATE=1 brew install "${TAP_SLUG}/${FORMULA_BASENAME}"
 
   # Fix common completion link conflicts automatically
   say "🔗 Relinking with overwrite to resolve completion conflicts…"
@@ -194,7 +203,6 @@ else
 
   # Smoke test
   BIN_NAME="${FORMULA_BASENAME//-/_}"  # token → binary heuristic if formula installs wrapper with different name, adjust if needed
-  # Prefer the advertised binary if we detect a known one
   case "$FORMULA_BASENAME" in
     stack_refreshr_cli) BIN_NAME="stack_refreshr" ;;
   esac
