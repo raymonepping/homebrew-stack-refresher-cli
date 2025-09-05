@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# shellcheck disable=SC2034
+VERSION="1.0.0"
+
 # post-steps unique to SSH domain
 _sr_d2_seed_config() {
   local cfg="$HOME/.ssh/config"

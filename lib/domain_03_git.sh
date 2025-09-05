@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# shellcheck disable=SC2034
+VERSION="1.0.0"
+
 _sr_d3_seed_gitconfig() {
   local cfg="$HOME/.gitconfig"
   if ! grep -q "\[core\]" "$cfg" 2>/dev/null; then

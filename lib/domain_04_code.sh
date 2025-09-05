@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# shellcheck disable=SC2034
+VERSION="1.0.0"
+
 # Seed VS Code settings.json with sane defaults
 _sr_d4_seed_vscode_settings() {
   local cfg="$HOME/Library/Application Support/Code/User/settings.json"

@@ -2,6 +2,9 @@
 # NOTE: do NOT enable `set -u` here; this file is often sourced into interactive shells.
 set -eo pipefail
 
+# shellcheck disable=SC2034
+VERSION="1.0.0"
+
 # stack_refreshr alias manager (opt-in)
 # Reads:   $SR_CONF/aliases.json
 # Writes:  ~/.config/stack_refreshr/aliases_autogen.sh

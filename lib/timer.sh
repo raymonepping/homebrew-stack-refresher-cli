@@ -2,6 +2,9 @@
 # Lightweight, macOS/BSD-safe timers with pretty output.
 # Supports multiple simultaneous timers keyed by a label.
 
+# shellcheck disable=SC2034
+VERSION="1.0.0"
+
 # Bash 4+ required for associative arrays (you're on Bash 5 ✅)
 declare -gA _TIMER_START_EPOCH=()
 declare -gA _TIMER_START_HUMAN=()

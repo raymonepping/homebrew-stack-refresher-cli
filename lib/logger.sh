@@ -1,3 +1,6 @@
+# shellcheck disable=SC2034
+VERSION="1.0.0"
+
 log_title()    { echo -e "\n🧠 \e[1m$1\e[0m"; }
 log_info()     { echo "➜ $1"; }
 log_success()  { echo "✅ $1"; }

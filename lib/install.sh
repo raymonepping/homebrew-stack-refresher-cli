@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# shellcheck disable=SC2034
+VERSION="1.0.0"
+
 OS="$(uname -s 2>/dev/null || echo unknown)"
 
 ok(){ printf "✅ %s\n" "$*"; }

@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# shellcheck disable=SC2034
+VERSION="1.0.0"
+
 # Print tool names for a level (must|should|could) from either schema.
 # Usage: sr_tools_list "$json_path" must
 sr_tools_list() {

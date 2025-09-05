@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# shellcheck disable=SC2034
+VERSION="0.0.0"
+
 # === Config ===
 FORMULA_DIR="Formula"
 SLEEP_DURATION=3

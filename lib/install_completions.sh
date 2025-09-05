@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# shellcheck disable=SC2034
+VERSION="1.0.0"
+
 have(){ command -v "$1" >/dev/null 2>&1; }
 
 sr_install_shell_completions() {

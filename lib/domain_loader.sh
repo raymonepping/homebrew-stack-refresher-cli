@@ -2,6 +2,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# shellcheck disable=SC2034
+VERSION="1.0.0"
+
 # Globals the caller can read after sr_domain_from_json:
 #   SR_LAST_SHOULD_PICKS, SR_LAST_COULD_PICKS
 unset SR_LAST_SHOULD_PICKS SR_LAST_COULD_PICKS

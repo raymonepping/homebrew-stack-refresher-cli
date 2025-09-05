@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# shellcheck disable=SC2034
+VERSION="1.0.0"
+
 # telemetry.sh — GitHub Gist JSONL appender (opt-in)
 # - Config path: ~/.config/stack_refreshr/telemetry.json
 # - Respects: TELEM_ENABLED, TELEM_DRY_RUN, SR_TELEM_CFG, GITHUB_TOKEN, gh auth

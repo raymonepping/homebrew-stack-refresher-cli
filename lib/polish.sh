@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Lightweight "polish mode" helpers — all optional.
 
+# shellcheck disable=SC2034
+VERSION="1.0.0"
+
 # Local utility (safe to redefine here)
 have(){ command -v "$1" >/dev/null 2>&1; }
 
