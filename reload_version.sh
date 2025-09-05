@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # shellcheck disable=SC2034
-VERSION="0.0.0"
+VERSION="1.0.0"
 
 # === Config ===
 FORMULA_DIR="Formula"
