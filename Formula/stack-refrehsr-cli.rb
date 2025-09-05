@@ -1,8 +1,8 @@
 class StackRefreshr < Formula
   desc "Bash-powered stack refresher with domains, docs generation, and telemetry"
-  homepage "https://github.com/raymonepping/stack_refresher" # update if different
-  url "https://github.com/raymonepping/stack_refresher/archive/refs/tags/v1.2.1.tar.gz" # update tag
-  sha256 "REPLACE_WITH_REAL_SHA256" # update
+  homepage "https://github.com/raymonepping/stack-refresher-cli"
+  url "https://github.com/raymonepping/homebrew-stack-refresher-cli/archive/refs/tags/v1.0.0.tar.gz"
+  sha256 "c8891dbce241044fa40727cf777f62f9c86ef5de18540ffab0cbea598c96ff10"
   license "MIT"
   version "1.0.0" # keep in sync with your tag
 
